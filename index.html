@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en" data-mode="light" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eric Lou 卢东奇 · Data + Quant + AI</title>
+<meta name="description" content="Eric Lou (卢东奇) — Data, Quant & AI. Econometrics to production AI systems: forecasting, backtesting, LLM platforms. EN · 简体 · 繁體">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Noto+Serif+SC:wght@600;900&family=Noto+Serif+TC:wght@600;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* 墨分五色 · v3 — living ink, three tongues, demos that run */
+:root{
+  --paper:#f4f0e6;--paper-2:#ece7d9;
+  --jiao:#181410;--nong:#332d24;--zhong:#5b5344;--dan:#8b816d;--qing:#c2b9a4;
+  --shu:#a63a26;--ai:#33586a;--gold:transparent;--up:#a63a26;--dn:#33586a;
+  --mist1:rgba(24,20,16,.16);--mist2:rgba(24,20,16,.09);--mist3:rgba(24,20,16,.045);
+  --card:rgba(255,255,255,.42);--shadow:0 18px 50px -18px rgba(24,20,16,.25);
+}
+html[data-mode="dark"]{
+  --paper:#101218;--paper-2:#0b0d11;
+  --jiao:#efe9da;--nong:#d6cfbe;--zhong:#a29a86;--dan:#6f6857;--qing:#37373a;
+  --shu:#c9503a;--ai:#7fa8bd;--gold:#b9962e;--up:#c9503a;--dn:#7fa8bd;
+  --mist1:rgba(239,233,218,.13);--mist2:rgba(239,233,218,.07);--mist3:rgba(239,233,218,.035);
+  --card:rgba(255,255,255,.03);--shadow:0 18px 50px -18px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--nong);font:16px/1.75 "IBM Plex Sans",-apple-system,sans-serif;
+  transition:background .6s,color .6s;overflow-x:hidden}
+html[data-lang="sc"] body{font-family:"IBM Plex Sans","Noto Sans SC",-apple-system,sans-serif}
+html[data-lang="tc"] body{font-family:"IBM Plex Sans","Noto Sans TC",-apple-system,sans-serif}
+::selection{background:var(--shu);color:var(--paper)}
+a{color:var(--ai);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--ai) 35%,transparent)}
+a:hover{border-bottom-color:var(--ai)}
+.mincho{font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif}
+.mono{font-family:"IBM Plex Mono",monospace}
+#journeySvg{position:absolute;top:0;left:0;width:130px;height:100%;z-index:0;pointer-events:none;opacity:.85}
+@media(max-width:1180px){#journeySvg{display:none}}
+.inkdrop{position:fixed;border-radius:50%;pointer-events:none;z-index:80;
+  background:radial-gradient(circle,color-mix(in srgb,var(--jiao) 55%,transparent) 0%,color-mix(in srgb,var(--jiao) 18%,transparent) 45%,transparent 70%);
+  animation:drop .8s ease-out forwards}
+@keyframes drop{from{transform:scale(.1);opacity:.8}to{transform:scale(1);opacity:0}}
+nav.rail{position:fixed;left:0;top:0;bottom:0;width:64px;z-index:40;display:flex;flex-direction:column;
+  align-items:center;gap:24px;padding:24px 0;border-right:1px solid var(--qing);
+  background:color-mix(in srgb,var(--paper) 82%,transparent);backdrop-filter:blur(8px)}
+nav.rail a{writing-mode:vertical-rl;letter-spacing:.5em;border:0;font-family:"Zen Old Mincho","Noto Serif TC",serif;
+  font-size:14px;color:var(--dan);transition:color .25s}
+nav.rail a:hover,nav.rail a.on{color:var(--shu)}
+nav.rail .seal-mini{margin-top:auto}
+main{margin-left:64px;position:relative}
+@media(max-width:820px){nav.rail{display:none}main{margin-left:0}}
+.topbar{position:fixed;right:0;top:0;z-index:41;display:flex;gap:8px;align-items:center;padding:16px 22px}
+.mode-btn,.lang-btn{cursor:pointer;border:1px solid var(--qing);background:var(--card);color:var(--nong);
+  border-radius:999px;padding:7px 13px;font:13px "IBM Plex Mono",monospace;letter-spacing:.06em;transition:border-color .25s}
+.mode-btn:hover,.lang-btn:hover{border-color:var(--shu)}
+.lang-btn.on{border-color:var(--shu);color:var(--shu)}
+.mode-btn:focus-visible,.lang-btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--shu);outline-offset:3px}
+header.hero{position:relative;min-height:96vh;display:flex;align-items:center;overflow:hidden}
+#inkgl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mountains{position:absolute;inset:0;pointer-events:none;z-index:1}
+.mountains svg{position:absolute;bottom:-2px;left:0;width:100%}
+.hero-inner{position:relative;z-index:3;max-width:960px;padding:120px 8vw 150px}
+.eyebrow{font:500 13px/1 "IBM Plex Mono",monospace;letter-spacing:.35em;color:var(--dan);text-transform:uppercase}
+.hero h1{font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif;font-weight:900;color:var(--jiao);
+  font-size:clamp(48px,8.2vw,100px);line-height:1.05;margin:18px 0 6px}
+.hero .han{display:block;font-weight:900;font-size:clamp(24px,3.6vw,40px);letter-spacing:.42em;color:var(--zhong);margin-top:12px}
+.hero .role{font:300 clamp(18px,2.5vw,24px)/1.5 inherit;color:var(--nong);margin:26px 0 8px}
+.hero .role b{font-weight:600;color:var(--jiao)}
+.hero .thesis{max-width:560px;color:var(--zhong);font-size:16.5px}
+.hero-cta{display:flex;gap:14px;align-items:center;margin-top:34px;flex-wrap:wrap}
+.btn-ink{display:inline-block;border:1.5px solid var(--jiao);color:var(--jiao);border-radius:2px;
+  padding:11px 26px;font:500 14px inherit;letter-spacing:.06em;transition:.25s;cursor:pointer;background:none}
+.btn-ink:hover{background:var(--jiao);color:var(--paper);border-bottom-color:var(--jiao)}
+.btn-ghost{color:var(--zhong);font-size:14px;border-bottom:1px solid var(--qing)}
+.seal-wrap{position:absolute;right:7vw;bottom:22vh;z-index:3;width:150px;height:150px}
+.seal-wrap svg.enso{position:absolute;inset:-14px;width:178px;height:178px;transform:rotate(-12deg)}
+.enso path{fill:none;stroke:var(--zhong);stroke-width:3.4;stroke-linecap:round;opacity:.75}
+.seal{position:absolute;inset:33px;transform:rotate(-4deg);background:var(--shu);color:#f4efe2;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-family:"Noto Serif TC","Noto Serif SC",serif;font-weight:900;
+  font-size:36px;writing-mode:vertical-rl;letter-spacing:4px;
+  box-shadow:inset 0 0 0 3px rgba(244,239,226,.85),inset 0 0 0 5px var(--shu),0 8px 30px -10px rgba(166,58,38,.55)}
+.seal small{font-size:11px;letter-spacing:5px;opacity:.9}
+@media(max-width:820px){.seal-wrap{right:5vw;bottom:7vh;transform:scale(.72);transform-origin:bottom right}}
+section{position:relative;max-width:1080px;margin:0 auto;padding:105px 8vw;z-index:2}
+.sec-head{display:flex;align-items:baseline;gap:22px;margin-bottom:54px}
+.sec-han{font-family:"Zen Old Mincho","Noto Serif TC","Noto Serif SC",serif;font-weight:700;font-size:46px;color:var(--jiao);line-height:1;position:relative}
+.sec-han::after{content:"";position:absolute;left:-8px;right:-8px;bottom:2px;height:14px;z-index:-1;
+  background:linear-gradient(90deg,var(--mist1),var(--mist3) 80%,transparent);border-radius:2px}
+.sec-title{font:300 15px/1.4 "IBM Plex Mono",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--dan)}
+.sec-note{margin-left:auto;font-size:13px;color:var(--dan)}
+@media(max-width:640px){.sec-note{display:none}}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}
+  #inkgl,#journeySvg{display:none}.inkdrop{display:none}}
+.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:34px 54px}
+.skill .s-row{display:flex;justify-content:space-between;align-items:baseline}
+.skill .s-name{font-weight:600;color:var(--jiao);font-size:15.5px}
+.skill .s-lv{font:400 11.5px "IBM Plex Mono",monospace;color:var(--dan);letter-spacing:.12em}
+.skill svg{display:block;width:100%;height:26px;margin-top:2px}
+.skill path{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.skill.in path{stroke-dashoffset:0}
+.skill .s-items{font-size:13px;color:var(--zhong);margin-top:4px;line-height:1.7}
+.inklegend{margin-top:44px;font-size:12.5px;color:var(--dan)}
+.inklegend i{display:inline-block;width:34px;height:8px;border-radius:4px;vertical-align:middle;margin:0 6px 0 16px}
+.timeline{position:relative;padding-left:34px}
+.timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;
+  background:linear-gradient(var(--qing),var(--mist1),var(--qing))}
+.t-item{position:relative;padding:0 0 56px}
+.t-item::before{content:"";position:absolute;left:-31px;top:8px;width:12px;height:12px;border-radius:50%;
+  background:var(--paper);border:2.5px solid var(--zhong)}
+.t-item.now::before{background:var(--shu);border-color:var(--shu);box-shadow:0 0 0 5px color-mix(in srgb,var(--shu) 18%,transparent)}
+.t-when{font:500 12px "IBM Plex Mono",monospace;letter-spacing:.14em;color:var(--dan)}
+.t-role{font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif;font-weight:700;font-size:23px;color:var(--jiao);margin:6px 0 2px}
+.t-org{font-size:14.5px;color:var(--shu);font-weight:500}
+.t-body{margin-top:10px;max-width:640px;color:var(--zhong);font-size:15px}
+.t-body ul{padding-left:18px;margin:8px 0 0}.t-body li{margin:5px 0}
+.scroll-label{display:flex;align-items:center;gap:16px;margin:8px 0 26px}
+.scroll-label .tag{font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif;font-weight:700;font-size:22px;color:var(--jiao)}
+.scroll-label .line{flex:1;height:1px;background:linear-gradient(90deg,var(--qing),transparent)}
+.scroll-label .sub{font:400 12px "IBM Plex Mono",monospace;color:var(--dan);letter-spacing:.12em}
+.projects{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:22px;margin-bottom:46px}
+.card{position:relative;border:1px solid var(--qing);border-radius:3px;background:var(--card);
+  padding:26px 24px 22px;box-shadow:var(--shadow);transition:transform .3s,border-color .3s;
+  display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.card:hover{transform:translateY(-4px);border-color:var(--zhong)}
+.card::before{content:"";position:absolute;top:12px;left:12px;right:12px;bottom:12px;
+  border:1px solid color-mix(in srgb,var(--qing) 55%,transparent);border-radius:2px;pointer-events:none}
+.card h3{margin:0;font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif;font-size:19px;color:var(--jiao)}
+.card .p-tag{font:500 10.5px "IBM Plex Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--shu)}
+.card p{margin:0;font-size:13.8px;color:var(--zhong);flex:1}
+.card .p-stack{font:400 11.5px "IBM Plex Mono",monospace;color:var(--dan);line-height:1.8}
+.card .p-demo{font-size:12.5px;color:var(--ai)}
+/* demos */
+.demo{border:1px solid var(--qing);border-radius:3px;background:var(--card);box-shadow:var(--shadow);
+  padding:24px;margin-bottom:26px;position:relative;overflow:hidden}
+.demo h3{margin:0 0 4px;font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif;font-size:20px;color:var(--jiao)}
+.demo .d-sub{font-size:13px;color:var(--dan);margin-bottom:14px}
+.demo canvas{width:100%;display:block;border-radius:2px}
+.d-controls{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:12px 0 4px;font-size:13px;color:var(--zhong)}
+.d-controls label{display:flex;gap:8px;align-items:center}
+.d-controls input[type=range]{accent-color:var(--shu);width:130px}
+.d-stats{display:flex;gap:26px;flex-wrap:wrap;font:500 12.5px "IBM Plex Mono",monospace;color:var(--zhong);margin-top:8px}
+.d-stats b{color:var(--jiao);font-size:15px}
+.d-stats .pos{color:var(--shu)}.d-stats .neg{color:var(--ai)}
+.d-note{font-size:12px;color:var(--dan);margin-top:10px}
+.rconsole{background:#0d0f13;color:#cfd6c3;border-radius:3px;border:1px solid var(--qing);
+  font:12.5px/1.6 "IBM Plex Mono",monospace;padding:14px 16px;max-height:300px;overflow:auto;white-space:pre-wrap}
+.rconsole .rin{color:#8fb573}.rconsole .rerr{color:#d髭}.rconsole .rerr{color:#d97b6c}
+.rbadge{display:inline-flex;align-items:center;gap:8px;font:600 12px "IBM Plex Mono",monospace;color:var(--paper);
+  background:#276dc3;border-radius:3px;padding:3px 10px;letter-spacing:.08em}
+/* journey map */
+.mapwrap{position:relative}
+#inkmap{width:100%;height:auto;display:block}
+#inkmap .land{fill:var(--mist2);stroke:var(--zhong);stroke-width:1.6;stroke-linejoin:round}
+#inkmap .route{fill:none;stroke:var(--shu);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:7 9;opacity:.9}
+#inkmap .city{cursor:pointer}
+#inkmap .city circle{fill:var(--paper);stroke:var(--shu);stroke-width:2.4;transition:r .2s}
+#inkmap .city:hover circle,#inkmap .city.on circle{fill:var(--shu)}
+#inkmap .city text{font:600 13px "Zen Old Mincho","Noto Serif TC",serif;fill:var(--jiao)}
+#inkmap .sea{font:400 12px "Zen Old Mincho",serif;fill:var(--dan);letter-spacing:.4em}
+.map-card{border:1px dashed var(--qing);border-radius:3px;background:var(--card);padding:16px 20px;
+  font-size:14px;color:var(--zhong);max-width:520px;margin-top:14px;min-height:64px}
+.map-card b{color:var(--jiao)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+.edu-item{margin-bottom:30px}
+.edu-deg{font-family:"Zen Old Mincho","Noto Serif SC","Noto Serif TC",serif;font-weight:600;font-size:18px;color:var(--jiao)}
+.edu-org{font-size:14px;color:var(--zhong)}
+.pub{font-size:14.5px;color:var(--zhong);margin-bottom:18px;padding-left:20px;position:relative}
+.pub::before{content:"—";position:absolute;left:0;color:var(--shu)}
+.contact-wrap{display:flex;gap:60px;flex-wrap:wrap;align-items:flex-start}
+.contact-kv{display:grid;grid-template-columns:auto 1fr;gap:10px 26px;font-size:15px}
+.contact-kv b{font:500 12px "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--dan);padding-top:2px}
+.private-note{border:1px dashed var(--qing);border-radius:3px;padding:18px 22px;max-width:380px;
+  font-size:13.5px;color:var(--zhong);background:var(--card)}
+.private-note b{color:var(--shu)}
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border:0;margin:60px auto 0;max-width:420px}
+footer{padding:60px 8vw 80px;text-align:center;color:var(--dan);font-size:12.5px;position:relative;z-index:2}
+footer .enso-f{font-family:"Zen Old Mincho",serif;font-size:30px;color:var(--zhong);display:block;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<script>
+/* ══════════════ CONTENT · three languages ══════════════
+   All copy renders from L10N[lang]. FILL-ME: exact dates only. */
+const L10N = {
+en: {
+  rail:["序","技","歴","作","旅","学","信"],
+  name:"Eric Lou", han:"卢东奇", eyebrow:"RESUME · 履歴 · HONG KONG · SHENZHEN · GUANGZHOU",
+  roles:["Data","Quant","AI"], years:"8 yrs AU study+work · now applied AI",
+  thesis:"From econometrics at Monash to production AI: I turn statistical rigor into running systems — forecasting models, live trading research, and multi-user LLM platforms.",
+  cta_work:"See the work 作", cta_contact:"Get in touch ↓",
+  sec:{skills:["技","Skills — ink density is the meter","墨分五色 · the darker the stroke, the deeper the practice"],
+       exp:["歴","Experience — the scroll so far","Melbourne → Hong Kong"],
+       work:["作","Works — two scrolls","the old scroll is rebuilt below as live demos"],
+       map:["旅","The journey — a map, redrawn in ink","hover the cities"],
+       edu:["学","Education & writing",""],
+       contact:["信","Contact",""]},
+  legend:["reading the ink:","清 aware","淡 working","中 solid","濃 deep","焦 mastery"],
+  lvn:["","清 aware","淡 working","中 solid","濃 deep","焦 mastery"],
+  skills:[
+    {name:"Econometrics & Forecasting",lv:5,items:"ARIMA / ETS / SARIMA · unit-root testing · prediction intervals · model diagnostics · retail & market time series"},
+    {name:"LLM Systems & Serving",lv:5,items:"RAG · multi-agent orchestration · llama.cpp / Ollama / MLX · quantization · sliding-window map-reduce"},
+    {name:"Python & ML Engineering",lv:5,items:"PyTorch · pandas / NumPy · scikit-learn · signal construction · backtest frameworks · evaluation harnesses"},
+    {name:"Classical ML",lv:4,items:"random forest · SVM · XGBoost · PCA · staged model comparison · audio/speech feature engineering"},
+    {name:"Data Engineering",lv:4,items:"Dagster · TimescaleDB / PostgreSQL · MinIO (S3) · real-time ingestion · 15k-symbol live feeds"},
+    {name:"MLOps & Infrastructure",lv:4,items:"Docker Compose fleets · CI/CD gates · GPU placement / VRAM budgeting · self-healing services"},
+    {name:"R & Shiny",lv:4,items:"R Shiny apps · R Markdown reporting · interactive statistical dashboards — see it RUN below ↓"},
+    {name:"Distributed ML",lv:3,items:"multi-node pipeline parallelism (3-Mac 265GB pool) · RPC / RDMA links · throughput profiling"}],
+  exp:[
+    {when:"2023 — NOW",now:true,role:"Independent Applied-AI Lab",org:"Sensus AI · Hong Kong",bullets:[
+      "Run a 100+ container AI platform on dual-A100s: model serving, multi-agent products, login-gated GenAI showcases behind one gateway.",
+      "Shipped Factory OS — a multi-user LLM pipeline (clean → summarize → task-ify) with per-user isolation, a 26-check self-test gate and a self-improving QA loop.",
+      "Built a real-time quant research stack: 15.5k-symbol live feed → Dagster → TimescaleDB → agent paper-trading desk."]},
+    {when:"2019 — 2023",role:"Application Developer · Data Analyst",org:"Crystal Jade Group · Melbourne",bullets:[  // FILL-ME dates
+      "Built internal applications and the group's data-analysis layer.",
+      "Owned reporting pipelines end-to-end — raw operational data to decision-ready analysis."]},
+    {when:"2015 — 2019",role:"Econometrics → Information Technology",org:"Monash University · Melbourne",bullets:[  // FILL-ME dates
+      "Retail forecasting: a full ARIMA-vs-ETS study — unit-root tests, model short-listing, diagnostics, 80% prediction intervals two years out.",
+      "Speech/audio ML: voice-recognition pipeline — audio features, PCA, then linear / tree / random-forest / SVM / XGBoost compared across three stages to a Kaggle score."]}],
+  newScroll:"THE NEW SCROLL — AI SYSTEMS, RUNNING NOW", oldScroll:"THE OLD SCROLL — QUANT & ECONOMETRICS, REBUILT AS LIVE DEMOS",
+  worksNew:[
+    {tag:"LLM PLATFORM",name:"Factory OS",stack:"Python · Ollama · Docker · MinIO · SSE",desc:"A multi-user assembly line for AI conversations: clip → clean → summarize → tasks, per-user products, sliding-window for any-size inputs, anti-hang guards, and a QA robot that writes its own improvement backlog."},
+    {tag:"QUANT / DATA ENG",name:"Real-time Quant Desk",stack:"Dagster · TimescaleDB · Redis · WebSocket",desc:"15,500-symbol live market feed into a Dagster → TimescaleDB pipeline, with agent-driven paper trading and gated research showcases."},
+    {tag:"DISTRIBUTED ML",name:"265 GB Model, 3 Macs",stack:"MLX · pipeline parallel · Thunderbolt RDMA",desc:"Pooled three Mac Studios into one inference machine for a 265 GB model at ~8.5 tok/s — N-way pipeline-parallel patch, stable serving, full runbook."},
+    {tag:"GEN-AI SERVICES",name:"A100 Showcase Platform",stack:"Traefik · CUDA · text2img · image→3D",desc:"A gateway of login-gated GenAI demos on dual-A100s: text-to-image, image-to-3D, streaming multi-model chat, and an agent team studio."}],
+  worksOld:[
+    {tag:"PY QUANT",name:"MA-Crossover Backtester",stack:"signals · backtest · equity vs hold",desc:"Moving-average crossover signals on daily bars, long-only backtests against buy-and-hold, with human verification down to the intraday chart.",demo:"▶ run it below"},
+    {tag:"PY QUANT",name:"Hot-Spot Market Tracker",stack:"real-time · scatter · four lenses",desc:"The whole market watched through four live lenses — change, volatility, turnover, volume — click any point to inspect its intraday line.",demo:"▶ run it below"},
+    {tag:"FORECASTING",name:"SARIMA Price Ranges",stack:"time series · prediction intervals",desc:"Seasonal ARIMA forecasts with honest uncertainty bands — the same discipline as the Monash retail study, aimed at prices.",demo:"▶ run it below — in real R"},
+    {tag:"AUDIO ML",name:"Voice Classification Pipeline",stack:"features · PCA · RF / SVM / XGBoost",desc:"A staged bake-off — five model families over three feature stages, scored on Kaggle — that taught the habit of comparing honestly before believing.",demo:"▶ results chart below"}],
+  demoTitles:{bt:["① MA-Crossover Backtester","tune the two averages; signals, equity and the buy-and-hold fight update live"],
+    hs:["② Hot-Spot Tracker","a synthetic market of 60 names streaming live — click a point to open its intraday line"],
+    fc:["③ SARIMA Forecast — run in real R","this button downloads R (WebAssembly) into your browser and fits the model live — nothing is faked"],
+    ml:["④ Voice Pipeline — the staged bake-off","five model families, three stages of features: honesty by comparison"]},
+  btLabels:{fast:"fast MA",slow:"slow MA",ret:"strategy",hold:"buy & hold",trades:"trades",win:"win rate"},
+  hsLabels:{x:"turnover %",y:"change %",click:"click a point — intraday appears here"},
+  fcRun:"▶ Run the R demo", fcRunning:"R is loading (~15 MB, first time only)…", fcNote:"webR = official R compiled to WebAssembly. The console output above is a real R session fitting arima() and predicting 12 months with standard errors — the fan below is drawn from those numbers.",
+  mlNote:"final-stage XGBoost took the Kaggle score — but the point is the method: never trust one model.",
+  mapCities:{mel:["Melbourne","Monash econometrics + Master of IT · Crystal Jade Group — 8 years of study and work"],
+             hk:["Hong Kong","home base — the applied-AI lab runs here"],
+             sz:["Shenzhen","open to roles here"], gz:["Guangzhou","open to roles here"]},
+  mapHint:"a Leaflet map once said where I was — this one, redrawn in ink, says where I've been and where I'm going.",
+  mapSea:"SOUTH CHINA SEA · 南海",
+  edu:[{when:"MONASH UNIVERSITY",deg:"Master of Information Technology",org:"Melbourne, Australia"},
+       {when:"MONASH UNIVERSITY",deg:"BCom — Econometrics & Business Statistics",org:"Melbourne, Australia"}],
+  eduTitle:"Education", pubTitle:"Notes & writing",
+  writing:["Ink and iron: budgeting VRAM for multi-tenant LLM serving (field notes).",
+    "Sliding-window map-reduce: summarizing unbounded transcripts past the context ceiling.",
+    "From ARIMA to agents: what econometric discipline teaches LLM evaluation."],
+  contact:{email:"ericdongqilu@gmail.com",github:"github.com/ericdongqilu",open_to:"Data / quant / applied-AI roles — Shenzhen · Guangzhou · Hong Kong · remote"},
+  kv:{email:"email",github:"github",open:"open to",phone:"phone",wechat:"wechat",linkedin:"linkedin",cv:"full cv",refs:"references",dl:"download PDF ↓"},
+  privNote:"<b>印 Private edition.</b> Phone, WeChat, LinkedIn, references and the full CV are on the login version of this page — ask me for access.",
+  privIn:"<b>印 Signed in.</b> You are viewing the private edition — full contact details are shown above.",
+  foot:"one hand-written page · 水墨 × 京 · the ink path above was drawn by your scroll"
+},
+sc: {
+  rail:["序","技","历","作","旅","学","信"],
+  name:"卢东奇", han:"Eric Lou", eyebrow:"简历 · 履历 · 香港 · 深圳 · 广州",
+  roles:["数据","量化","人工智能"], years:"澳洲求学与工作8年 · 现专注应用AI",
+  thesis:"从莫纳什的计量经济学到生产级AI：我把统计学的严谨变成真正运行的系统——预测模型、实时交易研究、多用户大模型平台。",
+  cta_work:"看作品 作", cta_contact:"联系我 ↓",
+  sec:{skills:["技","技能 — 以墨色深浅为尺","墨分五色 · 笔画越浓，功夫越深"],
+       exp:["历","经历 — 已展开的卷轴","墨尔本 → 香港"],
+       work:["作","作品 — 新旧两卷","旧卷已在下方重制为可运行的演示"],
+       map:["旅","旅路 — 以水墨重绘的地图","移到城市上看看"],
+       edu:["学","学历与随笔",""],
+       contact:["信","联系",""]},
+  legend:["读墨之法：","清 了解","淡 会用","中 扎实","浓 深入","焦 精通"],
+  lvn:["","清 了解","淡 会用","中 扎实","浓 深入","焦 精通"],
+  skills:[
+    {name:"计量经济与预测",lv:5,items:"ARIMA / ETS / SARIMA · 单位根检验 · 预测区间 · 模型诊断 · 零售与市场时间序列"},
+    {name:"大模型系统与推理服务",lv:5,items:"RAG · 多智能体编排 · llama.cpp / Ollama / MLX · 量化 · 滑动窗口 map-reduce"},
+    {name:"Python 与机器学习工程",lv:5,items:"PyTorch · pandas / NumPy · scikit-learn · 信号构建 · 回测框架 · 评估体系"},
+    {name:"经典机器学习",lv:4,items:"随机森林 · SVM · XGBoost · PCA · 分阶段模型对比 · 语音特征工程"},
+    {name:"数据工程",lv:4,items:"Dagster · TimescaleDB / PostgreSQL · MinIO (S3) · 实时接入 · 1.5万标的实时行情"},
+    {name:"MLOps 与基础设施",lv:4,items:"Docker Compose 集群 · CI/CD 关卡 · GPU 显存规划 · 服务自愈"},
+    {name:"R 与 Shiny",lv:4,items:"R Shiny 应用 · R Markdown 报告 · 交互式统计看板 — 下方可现场运行 ↓"},
+    {name:"分布式机器学习",lv:3,items:"多机流水线并行（3台Mac合池265GB）· RPC / RDMA 互联 · 吞吐剖析"}],
+  exp:[
+    {when:"2023 — 至今",now:true,role:"独立应用AI实验室",org:"Sensus AI · 香港",bullets:[
+      "在双A100上运营100+容器的AI平台：模型推理、多智能体产品、统一网关下的登录制演示。",
+      "交付 Factory OS——多用户大模型流水线（清洗→摘要→任务化），用户隔离、26项自检关卡、自我改进的QA闭环。",
+      "搭建实时量化研究栈：1.55万标的实时行情 → Dagster → TimescaleDB → 智能体模拟盘。"]},
+    {when:"2019 — 2023",role:"应用开发 · 数据分析师",org:"翡翠集团 · 墨尔本",bullets:[
+      "负责集团内部应用与数据分析层的搭建。",
+      "端到端负责报表管道——从原始运营数据到可决策的分析。"]},
+    {when:"2015 — 2019",role:"计量经济学 → 信息技术",org:"莫纳什大学 · 墨尔本",bullets:[
+      "零售预测：完整的 ARIMA 对 ETS 研究——单位根检验、模型筛选、诊断、两年期80%预测区间。",
+      "语音机器学习：声音识别管道——音频特征、PCA，再以线性/决策树/随机森林/SVM/XGBoost 三阶段对比，Kaggle 计分。"]}],
+  newScroll:"新卷 — 正在运行的AI系统", oldScroll:"旧卷 — 量化与计量经济，已重制为可运行演示",
+  worksNew:[
+    {tag:"大模型平台",name:"Factory OS",stack:"Python · Ollama · Docker · MinIO · SSE",desc:"AI对话的多用户流水线：采集→清洗→摘要→任务清单，按用户交付，滑动窗口处理任意长度输入，防卡死护栏，还有会自己写改进清单的QA机器人。"},
+    {tag:"量化 / 数据工程",name:"实时量化工作台",stack:"Dagster · TimescaleDB · Redis · WebSocket",desc:"1.55万标的实时行情流入 Dagster → TimescaleDB 管道，智能体模拟盘与登录制研究演示。"},
+    {tag:"分布式推理",name:"265 GB 模型 · 三台 Mac",stack:"MLX · 流水线并行 · 雷雳 RDMA",desc:"把三台 Mac Studio 合成一台推理机，265 GB 模型约 8.5 tok/s——N路流水线并行补丁、稳定服务、完整手册。"},
+    {tag:"生成式AI服务",name:"A100 演示平台",stack:"Traefik · CUDA · 文生图 · 图生3D",desc:"双A100上的登录制生成式AI演示网关：文生图、图生3D、多模型流式对话、智能体协作室。"}],
+  worksOld:[
+    {tag:"PY 量化",name:"均线交叉回测器",stack:"信号 · 回测 · 对比持有",desc:"日K均线交叉产生买卖信号，只做多满仓回测并与一直持有对比，可下钻到分时图人工验证。",demo:"▶ 下方现场运行"},
+    {tag:"PY 量化",name:"热点追踪器",stack:"实时 · 散点 · 四个视角",desc:"用涨幅、波幅、换手、成交量四个视角实时看整个市场——点任意一点查看它的分时线。",demo:"▶ 下方现场运行"},
+    {tag:"预测",name:"SARIMA 价格区间",stack:"时间序列 · 预测区间",desc:"季节性 ARIMA 预测与诚实的不确定性区间——与莫纳什零售研究同一套功夫，用在价格上。",demo:"▶ 下方以真实 R 运行"},
+    {tag:"语音ML",name:"声音分类管道",stack:"特征 · PCA · RF / SVM / XGBoost",desc:"分阶段擂台——五类模型、三层特征、Kaggle计分——练出'先比较、再相信'的习惯。",demo:"▶ 下方结果图"}],
+  demoTitles:{bt:["① 均线交叉回测器","拖动两条均线参数；信号、净值与持有对比实时更新"],
+    hs:["② 热点追踪器","60只合成标的实时流动——点任意一点展开分时线"],
+    fc:["③ SARIMA 预测 — 用真实 R 运行","此按钮把 R（WebAssembly 版）下载进浏览器并现场拟合——没有任何造假"],
+    ml:["④ 声音管道 — 分阶段擂台","五类模型、三层特征：用对比换来诚实"]},
+  btLabels:{fast:"快线",slow:"慢线",ret:"策略",hold:"一直持有",trades:"交易次数",win:"胜率"},
+  hsLabels:{x:"换手 %",y:"涨幅 %",click:"点一个点 — 分时图显示在这里"},
+  fcRun:"▶ 运行 R 演示", fcRunning:"R 加载中（约15MB，仅首次）…", fcNote:"webR = 官方 R 编译成 WebAssembly。上方控制台是一次真实的 R 会话：arima() 拟合并预测12期（含标准误）——下方扇形图正是用这些数字画的。",
+  mlNote:"最终阶段 XGBoost 拿下 Kaggle 分数——但重点是方法：永远别只信一个模型。",
+  mapCities:{mel:["墨尔本","莫纳什计量经济学 + 信息技术硕士 · 翡翠集团——求学与工作8年"],
+             hk:["香港","大本营——应用AI实验室在此运行"],
+             sz:["深圳","期待这里的机会"], gz:["广州","期待这里的机会"]},
+  mapHint:"旧站曾用一张 Leaflet 地图标注我在哪——这张以水墨重绘的，讲我从哪里来、要去哪里。",
+  mapSea:"南海",
+  edu:[{when:"莫纳什大学",deg:"信息技术硕士",org:"澳大利亚 · 墨尔本"},
+       {when:"莫纳什大学",deg:"商学学士 — 计量经济与商业统计",org:"澳大利亚 · 墨尔本"}],
+  eduTitle:"学历", pubTitle:"随笔",
+  writing:["墨与铁：多租户大模型推理的显存预算（实战笔记）。",
+    "滑动窗口 map-reduce：越过上下文天花板去摘要无界长文。",
+    "从 ARIMA 到智能体：计量经济学的纪律如何指导大模型评测。"],
+  contact:{email:"ericdongqilu@gmail.com",github:"github.com/ericdongqilu",open_to:"数据 / 量化 / 应用AI 岗位 — 深圳 · 广州 · 香港 · 远程"},
+  kv:{email:"邮箱",github:"github",open:"求职方向",phone:"电话",wechat:"微信",linkedin:"领英",cv:"完整简历",refs:"推荐人",dl:"下载 PDF ↓"},
+  privNote:"<b>印 私密版。</b>电话、微信、领英、推荐人与完整简历在本页的登录版本——欢迎向我索取访问。",
+  privIn:"<b>印 已登录。</b>您正在浏览私密版——完整联系方式已显示在上方。",
+  foot:"一页手写而成 · 水墨 × 京 · 上面那条墨线是您滚动时画出的"
+},
+tc: {
+  rail:["序","技","歷","作","旅","學","信"],
+  name:"盧東奇", han:"Eric Lou", eyebrow:"履歷 · 香港 · 深圳 · 廣州",
+  roles:["數據","量化","人工智能"], years:"澳洲求學與工作8年 · 現專注應用AI",
+  thesis:"從蒙納士的計量經濟學到生產級AI：我把統計學的嚴謹化為真正運行的系統——預測模型、即時交易研究、多用戶大模型平台。",
+  cta_work:"看作品 作", cta_contact:"聯絡我 ↓",
+  sec:{skills:["技","技能 — 以墨色深淺為尺","墨分五色 · 筆畫越濃，功夫越深"],
+       exp:["歷","經歷 — 已展開的卷軸","墨爾本 → 香港"],
+       work:["作","作品 — 新舊兩卷","舊卷已於下方重製為可運行的演示"],
+       map:["旅","旅路 — 以水墨重繪的地圖","移到城市上看看"],
+       edu:["學","學歷與隨筆",""],
+       contact:["信","聯絡",""]},
+  legend:["讀墨之法：","清 了解","淡 會用","中 紮實","濃 深入","焦 精通"],
+  lvn:["","清 了解","淡 會用","中 紮實","濃 深入","焦 精通"],
+  skills:[
+    {name:"計量經濟與預測",lv:5,items:"ARIMA / ETS / SARIMA · 單位根檢定 · 預測區間 · 模型診斷 · 零售與市場時間序列"},
+    {name:"大模型系統與推理服務",lv:5,items:"RAG · 多智能體編排 · llama.cpp / Ollama / MLX · 量化 · 滑動視窗 map-reduce"},
+    {name:"Python 與機器學習工程",lv:5,items:"PyTorch · pandas / NumPy · scikit-learn · 訊號構建 · 回測框架 · 評估體系"},
+    {name:"經典機器學習",lv:4,items:"隨機森林 · SVM · XGBoost · PCA · 分階段模型比較 · 語音特徵工程"},
+    {name:"數據工程",lv:4,items:"Dagster · TimescaleDB / PostgreSQL · MinIO (S3) · 即時接入 · 1.5萬標的即時行情"},
+    {name:"MLOps 與基礎設施",lv:4,items:"Docker Compose 叢集 · CI/CD 關卡 · GPU 顯存規劃 · 服務自癒"},
+    {name:"R 與 Shiny",lv:4,items:"R Shiny 應用 · R Markdown 報告 · 互動統計儀表板 — 下方可現場運行 ↓"},
+    {name:"分散式機器學習",lv:3,items:"多機流水線並行（3台Mac合池265GB）· RPC / RDMA 互聯 · 吞吐剖析"}],
+  exp:[
+    {when:"2023 — 至今",now:true,role:"獨立應用AI實驗室",org:"Sensus AI · 香港",bullets:[
+      "在雙A100上營運100+容器的AI平台：模型推理、多智能體產品、統一閘道下的登入制演示。",
+      "交付 Factory OS——多用戶大模型流水線（清洗→摘要→任務化），用戶隔離、26項自檢關卡、自我改進的QA閉環。",
+      "搭建即時量化研究棧：1.55萬標的即時行情 → Dagster → TimescaleDB → 智能體模擬盤。"]},
+    {when:"2019 — 2023",role:"應用開發 · 數據分析師",org:"翡翠集團 · 墨爾本",bullets:[
+      "負責集團內部應用與數據分析層的搭建。",
+      "端到端負責報表管線——從原始營運數據到可決策的分析。"]},
+    {when:"2015 — 2019",role:"計量經濟學 → 資訊科技",org:"蒙納士大學 · 墨爾本",bullets:[
+      "零售預測：完整的 ARIMA 對 ETS 研究——單位根檢定、模型篩選、診斷、兩年期80%預測區間。",
+      "語音機器學習：聲音識別管線——音訊特徵、PCA，再以線性/決策樹/隨機森林/SVM/XGBoost 三階段比較，Kaggle 計分。"]}],
+  newScroll:"新卷 — 正在運行的AI系統", oldScroll:"舊卷 — 量化與計量經濟，已重製為可運行演示",
+  worksNew:[
+    {tag:"大模型平台",name:"Factory OS",stack:"Python · Ollama · Docker · MinIO · SSE",desc:"AI對話的多用戶流水線：擷取→清洗→摘要→任務清單，按用戶交付，滑動視窗處理任意長度輸入，防卡死護欄，還有會自己寫改進清單的QA機器人。"},
+    {tag:"量化 / 數據工程",name:"即時量化工作台",stack:"Dagster · TimescaleDB · Redis · WebSocket",desc:"1.55萬標的即時行情流入 Dagster → TimescaleDB 管線，智能體模擬盤與登入制研究演示。"},
+    {tag:"分散式推理",name:"265 GB 模型 · 三台 Mac",stack:"MLX · 流水線並行 · Thunderbolt RDMA",desc:"把三台 Mac Studio 合成一台推理機，265 GB 模型約 8.5 tok/s——N路流水線並行補丁、穩定服務、完整手冊。"},
+    {tag:"生成式AI服務",name:"A100 演示平台",stack:"Traefik · CUDA · 文生圖 · 圖生3D",desc:"雙A100上的登入制生成式AI演示閘道：文生圖、圖生3D、多模型串流對話、智能體協作室。"}],
+  worksOld:[
+    {tag:"PY 量化",name:"均線交叉回測器",stack:"訊號 · 回測 · 對比持有",desc:"日K均線交叉產生買賣訊號，只做多滿倉回測並與一直持有對比，可下鑽到分時圖人工驗證。",demo:"▶ 下方現場運行"},
+    {tag:"PY 量化",name:"熱點追蹤器",stack:"即時 · 散點 · 四個視角",desc:"用漲幅、波幅、換手、成交量四個視角即時看整個市場——點任意一點查看它的分時線。",demo:"▶ 下方現場運行"},
+    {tag:"預測",name:"SARIMA 價格區間",stack:"時間序列 · 預測區間",desc:"季節性 ARIMA 預測與誠實的不確定性區間——與蒙納士零售研究同一套功夫，用在價格上。",demo:"▶ 下方以真實 R 運行"},
+    {tag:"語音ML",name:"聲音分類管線",stack:"特徵 · PCA · RF / SVM / XGBoost",desc:"分階段擂台——五類模型、三層特徵、Kaggle計分——練出「先比較、再相信」的習慣。",demo:"▶ 下方結果圖"}],
+  demoTitles:{bt:["① 均線交叉回測器","拖動兩條均線參數；訊號、淨值與持有對比即時更新"],
+    hs:["② 熱點追蹤器","60隻合成標的即時流動——點任意一點展開分時線"],
+    fc:["③ SARIMA 預測 — 用真實 R 運行","此按鈕把 R（WebAssembly 版）下載進瀏覽器並現場擬合——沒有任何造假"],
+    ml:["④ 聲音管線 — 分階段擂台","五類模型、三層特徵：用比較換來誠實"]},
+  btLabels:{fast:"快線",slow:"慢線",ret:"策略",hold:"一直持有",trades:"交易次數",win:"勝率"},
+  hsLabels:{x:"換手 %",y:"漲幅 %",click:"點一個點 — 分時圖顯示在這裡"},
+  fcRun:"▶ 運行 R 演示", fcRunning:"R 載入中（約15MB，僅首次）…", fcNote:"webR = 官方 R 編譯成 WebAssembly。上方主控台是一次真實的 R 會話：arima() 擬合並預測12期（含標準誤）——下方扇形圖正是用這些數字畫的。",
+  mlNote:"最終階段 XGBoost 拿下 Kaggle 分數——但重點是方法：永遠別只信一個模型。",
+  mapCities:{mel:["墨爾本","蒙納士計量經濟學 + 資訊科技碩士 · 翡翠集團——求學與工作8年"],
+             hk:["香港","大本營——應用AI實驗室在此運行"],
+             sz:["深圳","期待這裡的機會"], gz:["廣州","期待這裡的機會"]},
+  mapHint:"舊站曾用一張 Leaflet 地圖標注我在哪——這張以水墨重繪的，講我從哪裡來、要去哪裡。",
+  mapSea:"南海",
+  edu:[{when:"蒙納士大學",deg:"資訊科技碩士",org:"澳洲 · 墨爾本"},
+       {when:"蒙納士大學",deg:"商學士 — 計量經濟與商業統計",org:"澳洲 · 墨爾本"}],
+  eduTitle:"學歷", pubTitle:"隨筆",
+  writing:["墨與鐵：多租戶大模型推理的顯存預算（實戰筆記）。",
+    "滑動視窗 map-reduce：越過上下文天花板去摘要無界長文。",
+    "從 ARIMA 到智能體：計量經濟學的紀律如何指導大模型評測。"],
+  contact:{email:"ericdongqilu@gmail.com",github:"github.com/ericdongqilu",open_to:"數據 / 量化 / 應用AI 職位 — 深圳 · 廣州 · 香港 · 遠端"},
+  kv:{email:"郵箱",github:"github",open:"求職方向",phone:"電話",wechat:"微信",linkedin:"LinkedIn",cv:"完整履歷",refs:"推薦人",dl:"下載 PDF ↓"},
+  privNote:"<b>印 私密版。</b>電話、微信、LinkedIn、推薦人與完整履歷在本頁的登入版本——歡迎向我索取存取。",
+  privIn:"<b>印 已登入。</b>您正在瀏覽私密版——完整聯絡方式已顯示在上方。",
+  foot:"一頁手寫而成 · 水墨 × 京 · 上面那條墨線是您捲動時畫出的"
+}};
+</script>
+
+<nav class="rail" aria-label="chapters" id="railNav"></nav>
+
+<div class="topbar">
+  <button class="lang-btn" data-lang="en">EN</button>
+  <button class="lang-btn" data-lang="sc">简</button>
+  <button class="lang-btn" data-lang="tc">繁</button>
+  <button class="mode-btn" id="modeBtn" aria-label="toggle light or dark mode">夜 · dark</button>
+</div>
+
+<main>
+<svg id="journeySvg" aria-hidden="true"><path id="journeyPath" fill="none" stroke="var(--zhong)" stroke-width="2.2" stroke-linecap="round" opacity=".55"/></svg>
+
+<header class="hero" id="top">
+  <canvas id="inkgl" aria-hidden="true"></canvas>
+  <div class="mountains" aria-hidden="true">
+    <svg viewBox="0 0 1440 420" preserveAspectRatio="none" style="opacity:.24;filter:blur(2px);height:60%"><path d="M0,420 L0,300 Q180,140 340,240 T700,200 T1050,260 T1440,180 L1440,420 Z" fill="var(--mist2)"/></svg>
+    <svg viewBox="0 0 1440 420" preserveAspectRatio="none" style="opacity:.5;height:46%"><path d="M0,420 L0,330 Q240,190 420,290 T820,260 T1180,320 T1440,240 L1440,420 Z" fill="var(--mist2)"/></svg>
+    <svg viewBox="0 0 1440 420" preserveAspectRatio="none" style="height:32%"><path d="M0,420 L0,360 Q300,240 540,330 T980,310 T1440,330 L1440,420 Z" fill="var(--mist1)"/></svg>
+  </div>
+  <div class="hero-inner">
+    <div class="eyebrow rv" id="eyebrow"></div>
+    <h1 class="rv"><span id="nameSpan"></span><span class="han" id="hanSpan"></span></h1>
+    <div class="role rv" id="roleLine"></div>
+    <p class="thesis rv" id="thesisP"></p>
+    <div class="hero-cta rv">
+      <a class="btn-ink" href="#work" id="ctaWork"></a>
+      <a class="btn-ghost" href="#contact" id="ctaContact"></a>
+    </div>
+  </div>
+  <div class="seal-wrap" aria-hidden="true">
+    <svg class="enso" viewBox="0 0 100 100"><path id="ensoPath" d="M 62 9 A 42 42 0 1 0 88 34"/></svg>
+    <div class="seal" id="sealBox">盧<small>東奇</small></div>
+  </div>
+</header>
+
+<section id="skills">
+  <div class="sec-head rv"><span class="sec-han" id="hanSkills"></span><span class="sec-title" id="titleSkills"></span><span class="sec-note" id="noteSkills"></span></div>
+  <div class="skills" id="skillsGrid"></div>
+  <div class="inklegend rv" id="inkLegend"></div>
+</section>
+
+<section id="exp">
+  <div class="sec-head rv"><span class="sec-han" id="hanExp"></span><span class="sec-title" id="titleExp"></span><span class="sec-note" id="noteExp"></span></div>
+  <div class="timeline" id="expList"></div>
+</section>
+
+<section id="work">
+  <div class="sec-head rv"><span class="sec-han" id="hanWork"></span><span class="sec-title" id="titleWork"></span><span class="sec-note" id="noteWork"></span></div>
+  <div class="scroll-label rv"><span class="tag">新卷</span><span class="sub" id="subNew"></span><span class="line"></span></div>
+  <div class="projects" id="projNew"></div>
+  <div class="scroll-label rv"><span class="tag">旧卷</span><span class="sub" id="subOld"></span><span class="line"></span></div>
+  <div class="projects" id="projOld"></div>
+
+  <!-- ① backtester -->
+  <div class="demo rv" id="demoBT">
+    <h3 id="btTitle"></h3><div class="d-sub" id="btSub"></div>
+    <canvas id="btCanvas" height="360"></canvas>
+    <div class="d-controls">
+      <label><span id="btFastL"></span> <input type="range" id="btFast" min="3" max="30" value="5"> <b id="btFastV" class="mono">5</b></label>
+      <label><span id="btSlowL"></span> <input type="range" id="btSlow" min="10" max="90" value="20"> <b id="btSlowV" class="mono">20</b></label>
+    </div>
+    <div class="d-stats" id="btStats"></div>
+  </div>
+
+  <!-- ② hot-spot -->
+  <div class="demo rv" id="demoHS">
+    <h3 id="hsTitle"></h3><div class="d-sub" id="hsSub"></div>
+    <canvas id="hsCanvas" height="330"></canvas>
+    <canvas id="hsIntra" height="110" style="margin-top:10px"></canvas>
+    <div class="d-note" id="hsClick"></div>
+  </div>
+
+  <!-- ③ R / SARIMA -->
+  <div class="demo rv" id="demoFC">
+    <h3 id="fcTitle"></h3><div class="d-sub" id="fcSub"></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn-ink" id="fcRun"></button>
+      <span class="rbadge">R · webR/WASM</span>
+      <span class="d-note" id="fcState"></span>
+    </div>
+    <div class="rconsole" id="rOut" hidden></div>
+    <canvas id="fcCanvas" height="300" style="margin-top:12px"></canvas>
+    <div class="d-note" id="fcNote"></div>
+  </div>
+
+  <!-- ④ audio-ML -->
+  <div class="demo rv" id="demoML">
+    <h3 id="mlTitle"></h3><div class="d-sub" id="mlSub"></div>
+    <canvas id="mlCanvas" height="240"></canvas>
+    <div class="d-note" id="mlNote"></div>
+  </div>
+  <hr class="gold-rule">
+</section>
+
+<section id="map">
+  <div class="sec-head rv"><span class="sec-han" id="hanMap"></span><span class="sec-title" id="titleMap"></span><span class="sec-note" id="noteMap"></span></div>
+  <div class="mapwrap rv">
+    <svg id="inkmap" viewBox="0 0 900 520" role="img" aria-label="journey map">
+      <!-- south China coast (stylized ink landmass) -->
+      <path class="land" d="M -20,60 Q 90,30 180,64 Q 260,92 320,74 Q 388,52 440,86 Q 470,106 452,138 Q 430,174 370,168 Q 300,160 250,178 Q 190,200 130,182 Q 60,162 -20,190 Z"/>
+      <!-- Australia (stylized) -->
+      <path class="land" d="M 560,320 Q 610,268 690,278 Q 770,286 820,330 Q 862,368 838,416 Q 810,466 730,470 Q 650,474 600,436 Q 552,398 560,320 Z"/>
+      <text class="sea" x="330" y="300" id="seaLabel"></text>
+      <!-- the route: Melbourne → Hong Kong -->
+      <path class="route" id="routePath" d="M 742,432 C 640,420 470,380 380,300 C 330,254 300,206 286,166"/>
+      <!-- cities -->
+      <g class="city" data-c="mel" transform="translate(742,432)"><circle r="8"/><text x="14" y="5" id="cMel"></text></g>
+      <g class="city" data-c="hk"  transform="translate(286,166)"><circle r="9"/><text x="14" y="5" id="cHk"></text></g>
+      <g class="city" data-c="sz"  transform="translate(258,138)"><circle r="6"/><text x="12" y="4" id="cSz"></text></g>
+      <g class="city" data-c="gz"  transform="translate(214,112)"><circle r="6"/><text x="12" y="4" id="cGz"></text></g>
+    </svg>
+    <div class="map-card" id="mapCard"></div>
+    <div class="d-note" id="mapHint"></div>
+  </div>
+</section>
+
+<section id="edu">
+  <div class="sec-head rv"><span class="sec-han" id="hanEdu"></span><span class="sec-title" id="titleEdu"></span></div>
+  <div class="two-col"><div id="eduList"></div><div id="pubList"></div></div>
+</section>
+
+<section id="contact">
+  <div class="sec-head rv"><span class="sec-han" id="hanContact"></span><span class="sec-title" id="titleContact"></span></div>
+  <div class="contact-wrap rv">
+    <div class="contact-kv" id="contactKV"></div>
+    <div class="private-note" id="privateNote"></div>
+  </div>
+</section>
+
+<footer><span class="enso-f" aria-hidden="true">◯</span><span id="footLine"></span></footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $id=s=>document.getElementById(s),esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let LANG="en",PRIV=null;
+const T=()=>L10N[LANG];
+
+/* seeded PRNG + shared synthetic market data (regenerated once) */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd=mulberry32(20260702);
+const OHLC=(()=>{const n=260,out=[];let p=100;for(let i=0;i<n;i++){
+  const drift=(i<90?.0006:i<170?-.0004:.0009),vol=.013+.006*Math.sin(i/28);
+  const o=p,c=p*(1+drift+(rnd()*2-1)*vol);
+  const h=Math.max(o,c)*(1+rnd()*vol*.7),l=Math.min(o,c)*(1-rnd()*vol*.7);
+  out.push({o,h,l,c});p=c;}return out;})();
+const RETAIL=(()=>{const out=[];let base=48;for(let i=0;i<120;i++){ // monthly, trend+season like the Monash series
+  const season=[0,-2,1,3,2,1,0,-1,1,3,6,12][i%12];
+  base*=1.004;out.push(+(base+season+(rnd()*2-1)*2.2).toFixed(2));}return out;})();
+
+/* ---------- i18n render ---------- */
+function render(){
+  const t=T();document.documentElement.dataset.lang=LANG;
+  document.documentElement.lang=LANG==="en"?"en":(LANG==="sc"?"zh-Hans":"zh-Hant");
+  document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
+  $id("railNav").innerHTML=[["#top",0],["#skills",1],["#exp",2],["#work",3],["#map",4],["#edu",5],["#contact",6]]
+    .map(([h,i])=>`<a href="${h}" class="mincho">${t.rail[i]}</a>`).join("")+
+    `<span class="seal-mini mincho" style="color:var(--shu);font-size:18px" aria-hidden="true">印</span>`;
+  $id("eyebrow").textContent=t.eyebrow;
+  $id("nameSpan").textContent=t.name;$id("hanSpan").textContent=t.han;
+  $id("roleLine").innerHTML=t.roles.map(r=>`<b>${esc(r)}</b>`).join(" + ")+` — <span class="mono" style="font-size:.72em;color:var(--dan)">${esc(t.years)}</span>`;
+  $id("thesisP").textContent=t.thesis;
+  $id("ctaWork").textContent=t.cta_work;$id("ctaContact").textContent=t.cta_contact;
+  for(const[k,cap]of[["skills","Skills"],["exp","Exp"],["work","Work"],["map","Map"],["edu","Edu"],["contact","Contact"]]){
+    const s=t.sec[k];$id("han"+cap).textContent=s[0];$id("title"+cap).textContent=s[1];
+    const n=$id("note"+cap);if(n)n.textContent=s[2]||"";}
+  const INK=["","var(--qing)","var(--dan)","var(--zhong)","var(--nong)","var(--jiao)"];
+  $id("skillsGrid").innerHTML=t.skills.map((s,i)=>{const len=34+s.lv*13,ink=INK[s.lv];
+    return `<div class="skill rv in" style="transition-delay:${i*60}ms">
+    <div class="s-row"><span class="s-name">${esc(s.name)}</span><span class="s-lv">${t.lvn[s.lv]}</span></div>
+    <svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true">
+      <path style="--len:130" d="M1,6 C ${len*.25},2 ${len*.55},10 ${len},6" fill="none" stroke="${ink}" stroke-width="7" stroke-linecap="round" opacity=".92" pathLength="130"/>
+      <path style="--len:40" d="M${len},6 C ${len+4},5 ${len+7},6.5 ${Math.min(len+11,99)},6" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round" opacity=".4" pathLength="40"/>
+    </svg><div class="s-items">${esc(s.items)}</div></div>`;}).join("");
+  $id("inkLegend").innerHTML=esc(t.legend[0])+t.legend.slice(1).map((x,i)=>`<i style="background:${INK[i+1]}"></i>${esc(x)}`).join("");
+  $id("expList").innerHTML=t.exp.map(e=>`<div class="t-item rv in ${e.now?"now":""}">
+    <div class="t-when">${esc(e.when)}</div><div class="t-role">${esc(e.role)}</div>
+    <div class="t-org">${esc(e.org)}</div>
+    <div class="t-body"><ul>${e.bullets.map(b=>`<li>${esc(b)}</li>`).join("")}</ul></div></div>`).join("");
+  $id("subNew").textContent=t.newScroll;$id("subOld").textContent=t.oldScroll;
+  const card=p=>`<div class="card rv in"><span class="p-tag">${esc(p.tag)}</span><h3>${esc(p.name)}</h3>
+    <p>${esc(p.desc)}</p><div class="p-stack">${esc(p.stack)}</div>${p.demo?`<div class="p-demo">${esc(p.demo)}</div>`:""}</div>`;
+  $id("projNew").innerHTML=t.worksNew.map(card).join("");
+  $id("projOld").innerHTML=t.worksOld.map(card).join("");
+  $id("btTitle").textContent=t.demoTitles.bt[0];$id("btSub").textContent=t.demoTitles.bt[1];
+  $id("hsTitle").textContent=t.demoTitles.hs[0];$id("hsSub").textContent=t.demoTitles.hs[1];
+  $id("fcTitle").textContent=t.demoTitles.fc[0];$id("fcSub").textContent=t.demoTitles.fc[1];
+  $id("mlTitle").textContent=t.demoTitles.ml[0];$id("mlSub").textContent=t.demoTitles.ml[1];
+  $id("btFastL").textContent=t.btLabels.fast;$id("btSlowL").textContent=t.btLabels.slow;
+  $id("hsClick").textContent=t.hsLabels.click;
+  if(!window.__rRan)$id("fcRun").textContent=t.fcRun;
+  $id("fcNote").textContent=t.fcNote;$id("mlNote").textContent=t.mlNote;
+  $id("cMel").textContent=t.mapCities.mel[0];$id("cHk").textContent=t.mapCities.hk[0];
+  $id("cSz").textContent=t.mapCities.sz[0];$id("cGz").textContent=t.mapCities.gz[0];
+  $id("seaLabel").textContent=t.mapSea;$id("mapHint").textContent=t.mapHint;
+  const mc=document.querySelector("#inkmap .city.on");mapCard(mc?mc.dataset.c:"hk");
+  $id("eduList").innerHTML=`<h3 class='mincho' style='margin:0 0 22px;color:var(--jiao)'>${esc(t.eduTitle)}</h3>`+
+    t.edu.map(e=>`<div class="edu-item rv in"><div class="t-when">${esc(e.when)}</div>
+    <div class="edu-deg">${esc(e.deg)}</div><div class="edu-org">${esc(e.org)}</div></div>`).join("");
+  $id("pubList").innerHTML=`<h3 class='mincho' style='margin:0 0 22px;color:var(--jiao)'>${esc(t.pubTitle)}</h3>`+
+    t.writing.map(w=>`<div class="pub rv in">${esc(w)}</div>`).join("");
+  renderContact();
+  $id("footLine").textContent=`${t.name} · ${t.roles.join(" + ")}`;
+  const f=document.createElement("div");f.textContent=t.foot;f.style.marginTop="4px";
+  $id("footLine").parentElement.querySelectorAll("div").forEach(d=>d.remove());
+  $id("footLine").parentElement.appendChild(f);
+  drawBT();drawML();drawFC(null,null);
+}
+function renderContact(){
+  const t=T(),k=t.kv,kv=[[k.email,esc(PRIV?.email||t.contact.email)],
+    [k.github,`<a href="https://${esc(t.contact.github)}" rel="me">${esc(t.contact.github)}</a>`],
+    [k.open,esc(t.contact.open_to)]];
+  if(PRIV){
+    if(PRIV.phone)kv.push([k.phone,esc(PRIV.phone)]);
+    if(PRIV.wechat)kv.push([k.wechat,esc(PRIV.wechat)]);
+    if(PRIV.linkedin)kv.push([k.linkedin,`<a href="https://${esc(PRIV.linkedin)}">${esc(PRIV.linkedin)}</a>`]);
+    if(PRIV.cv_url)kv.push([k.cv,`<a href="${esc(PRIV.cv_url)}">${esc(k.dl)}</a>`]);
+    if(PRIV.references)kv.push([k.refs,esc(PRIV.references)]);
+    $id("privateNote").innerHTML=t.privIn;
+  } else $id("privateNote").innerHTML=t.privNote;
+  $id("contactKV").innerHTML=kv.map(([a,b])=>`<b>${a}</b><span>${b}</span>`).join("");
+}
+fetch("private.json").then(r=>r.ok?r.json():null).then(p=>{if(p){PRIV=p;renderContact();}}).catch(()=>{});
+
+/* language + mode */
+document.querySelectorAll(".lang-btn").forEach(b=>b.onclick=()=>{LANG=b.dataset.lang;try{localStorage.setItem("lang",LANG)}catch(_){}render();});
+const mBtn=$id("modeBtn"),htmlEl=document.documentElement;
+function setMode(m){htmlEl.dataset.mode=m;mBtn.textContent=m==="light"?"夜 · dark":"昼 · light";
+  try{localStorage.setItem("mode",m)}catch(_){}
+  if(window.__inkUniforms)window.__inkUniforms.uDark.value=m==="dark"?1:0;
+  drawBT();drawML();drawFC(window.__fcP,window.__fcSE);}
+setMode((()=>{try{return localStorage.getItem("mode")}catch(_){return null}})()||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
+mBtn.onclick=()=>setMode(htmlEl.dataset.mode==="light"?"dark":"light");
+LANG=(()=>{try{return localStorage.getItem("lang")}catch(_){return null}})()||"en";
+render();
+
+/* reveals + rail highlight */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")}),{threshold:.1});
+document.querySelectorAll(".rv").forEach(el=>io.observe(el));
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)
+  document.querySelectorAll("nav.rail a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+e.target.id));
+}),{rootMargin:"-40% 0px -55% 0px"});
+["top","skills","exp","work","map","edu","contact"].forEach(id=>{const el=$id(id);if(el)so.observe(el)});
+
+/* enso + scroll ink path + ink drops (as v2) */
+(()=>{const p=$id("ensoPath");if(!p)return;const L=p.getTotalLength();
+ p.style.strokeDasharray=L;p.style.strokeDashoffset=REDUCED?0:L;
+ if(!REDUCED){p.style.transition="stroke-dashoffset 1.8s cubic-bezier(.5,0,.3,1) .4s";
+ requestAnimationFrame(()=>requestAnimationFrame(()=>p.style.strokeDashoffset=0));}})();
+(()=>{if(REDUCED)return;const svg=$id("journeySvg"),path=$id("journeyPath");if(!svg||!path)return;let L=0;
+  function build(){const H=Math.max(document.documentElement.scrollHeight,2000);
+    svg.setAttribute("viewBox",`0 0 130 ${H}`);svg.style.height=H+"px";
+    let d=`M 65 ${innerHeight*.75}`,y=innerHeight*.75,dir=1;const amp=38;
+    while(y<H-160){const ny=Math.min(y+520,H-160);
+      d+=` C 65 ${y+170}, ${65+amp*dir} ${y+260}, ${65+amp*dir} ${y+330} S 65 ${ny-80}, 65 ${ny}`;y=ny;dir*=-1;}
+    path.setAttribute("d",d);L=path.getTotalLength();path.style.strokeDasharray=L;draw();}
+  function draw(){const p=Math.min(1,(scrollY+innerHeight*.7)/document.documentElement.scrollHeight);
+    path.style.strokeDashoffset=L*(1-p);}
+  addEventListener("scroll",draw,{passive:true});
+  addEventListener("resize",()=>{clearTimeout(window.__jt);window.__jt=setTimeout(build,300)});
+  setTimeout(build,500);})();
+if(!REDUCED)addEventListener("pointerdown",e=>{if(e.target.closest("a,button,input,.city"))return;
+  const d=document.createElement("div");d.className="inkdrop";const s=90+Math.random()*70;
+  d.style.cssText+=`left:${e.clientX-s/2}px;top:${e.clientY-s/2}px;width:${s}px;height:${s}px`;
+  document.body.appendChild(d);setTimeout(()=>d.remove(),850);});
+
+/* three.js ink mist (as v2) */
+(()=>{if(REDUCED||!window.THREE)return;const canvas=$id("inkgl");let renderer;
+  try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false});}catch(_){return;}
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
+  const scene=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+  const uniforms={t:{value:0},res:{value:new THREE.Vector2(1,1)},mouse:{value:new THREE.Vector2(.5,.5)},
+    uDark:{value:document.documentElement.dataset.mode==="dark"?1:0}};
+  window.__inkUniforms=uniforms;
+  const mat=new THREE.ShaderMaterial({uniforms,transparent:true,
+    vertexShader:"void main(){gl_Position=vec4(position,1.0);}",
+    fragmentShader:`precision highp float;uniform float t;uniform vec2 res,mouse;uniform float uDark;
+      float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
+      float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+        return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+      float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p*=2.03;a*=.52;}return v;}
+      void main(){vec2 uv=gl_FragCoord.xy/res;vec2 p=uv*vec2(res.x/res.y,1.);
+        vec2 drift=vec2(t*.016,-t*.009)+(mouse-.5)*.22;
+        float m=fbm(p*2.1+drift+fbm(p*3.7-drift)*.55);m=smoothstep(.38,.85,m);
+        float a=m*smoothstep(.15,.75,uv.y)*smoothstep(.0,.28,uv.x)*smoothstep(1.,.72,uv.x)*(uDark>.5?.34:.16);
+        vec3 ink=uDark>.5?vec3(.93,.91,.85):vec3(.10,.08,.06);
+        gl_FragColor=vec4(mix(ink,vec3(.65,.25,.15),(1.-m)*.08),a);}`});
+  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),mat));
+  const hero=document.querySelector("header.hero");
+  function size(){renderer.setSize(hero.clientWidth,hero.clientHeight,false);
+    uniforms.res.value.set(hero.clientWidth*renderer.getPixelRatio(),hero.clientHeight*renderer.getPixelRatio());}
+  size();addEventListener("resize",size);
+  addEventListener("pointermove",e=>uniforms.mouse.value.set(e.clientX/innerWidth,1-e.clientY/innerHeight),{passive:true});
+  let run=true;document.addEventListener("visibilitychange",()=>run=!document.hidden);
+  (function loop(ts){requestAnimationFrame(loop);if(!run)return;uniforms.t.value=ts*.001;renderer.render(scene,cam);})(0);})();
+
+/* ---------- chart helpers ---------- */
+function cvs(id){const c=$id(id),r=Math.min(devicePixelRatio,2),w=c.clientWidth||c.parentElement.clientWidth;
+  c.width=w*r;c.height=+c.getAttribute("height")*r;const x=c.getContext("2d");x.scale(r,r);
+  return[x,w,+c.getAttribute("height")];}
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ---------- ① backtester ---------- */
+function sma(a,n){return a.map((_,i)=>i<n-1?null:a.slice(i-n+1,i+1).reduce((s,v)=>s+v,0)/n);}
+function drawBT(){
+  const t=T(),fast=+$id("btFast").value,slow=+$id("btSlow").value;
+  $id("btFastV").textContent=fast;$id("btSlowV").textContent=slow;
+  const C=OHLC.map(d=>d.c),f=sma(C,fast),s=sma(C,slow);
+  let pos=0,eq=[1],hold=[1],trades=0,wins=0,entry=0;
+  for(let i=1;i<C.length;i++){
+    const sig=f[i-1]!=null&&s[i-1]!=null?(f[i-1]>s[i-1]?1:0):0;
+    if(sig!==pos){trades++;if(pos===1&&C[i]>entry)wins++;if(sig===1)entry=C[i];pos=sig;}
+    eq.push(eq[i-1]*(pos?C[i]/C[i-1]:1));hold.push(hold[i-1]*C[i]/C[i-1]);}
+  const[x,w,h]=cvs("btCanvas");x.clearRect(0,0,w,h);
+  const lo=Math.min(...OHLC.map(d=>d.l)),hi=Math.max(...OHLC.map(d=>d.h));
+  const px=i=>14+(w-28)*i/(OHLC.length-1),py=v=>16+(h*0.62-32)*(1-(v-lo)/(hi-lo));
+  OHLC.forEach((d,i)=>{const up=d.c>=d.o;x.strokeStyle=x.fillStyle=up?css("--up"):css("--dn");
+    x.globalAlpha=.85;x.beginPath();x.moveTo(px(i),py(d.h));x.lineTo(px(i),py(d.l));x.stroke();
+    x.fillRect(px(i)-1.4,py(Math.max(d.o,d.c)),2.8,Math.max(1.5,Math.abs(py(d.o)-py(d.c))));});
+  x.globalAlpha=1;
+  for(const[arr,col,wd]of[[f,css("--zhong"),1.4],[s,css("--dan"),1.4]]){
+    x.strokeStyle=col;x.lineWidth=wd;x.beginPath();let m=false;
+    arr.forEach((v,i)=>{if(v==null)return;m?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v));m=true;});x.stroke();}
+  let prev=0;
+  for(let i=1;i<C.length;i++){const sig=f[i-1]&&s[i-1]?(f[i-1]>s[i-1]?1:0):0;
+    if(sig!==prev){x.fillStyle=sig?css("--shu"):css("--ai");x.font="600 11px IBM Plex Mono";
+      x.fillText(sig?"▲":"▼",px(i)-4,sig?py(OHLC[i].l)+14:py(OHLC[i].h)-6);prev=sig;}}
+  const eLo=Math.min(...eq,...hold),eHi=Math.max(...eq,...hold);
+  const ey=v=>h*0.66+ (h*0.34-18)*(1-(v-eLo)/(eHi-eLo));
+  x.strokeStyle=css("--qing");x.lineWidth=1;x.strokeRect(14,h*0.66,w-28,h*0.34-18);
+  for(const[arr,col,wd]of[[hold,css("--dan"),1.3],[eq,css("--shu"),2]]){
+    x.strokeStyle=col;x.lineWidth=wd;x.beginPath();
+    arr.forEach((v,i)=>i?x.lineTo(px(i),ey(v)):x.moveTo(px(0),ey(v)));x.stroke();}
+  const l=t.btLabels,st=[[l.ret,((eq.at(-1)-1)*100).toFixed(1)+"%",eq.at(-1)>=hold.at(-1)?"pos":"neg"],
+    [l.hold,((hold.at(-1)-1)*100).toFixed(1)+"%",""],[l.trades,trades,""],
+    [l.win,trades?Math.round(100*wins/Math.max(1,Math.floor(trades/2)))+"%":"—",""]];
+  $id("btStats").innerHTML=st.map(([k,v,c])=>`<span>${esc(k)} <b class="${c}">${v}</b></span>`).join("");
+}
+$id("btFast").oninput=drawBT;$id("btSlow").oninput=drawBT;
+
+/* ---------- ② hot-spot tracker ---------- */
+const HS=Array.from({length:60},(_,i)=>({chg:(rnd()*2-1)*6,to:rnd()*22+1,vol:rnd()*9+1,
+  vx:(rnd()*2-1)*.04,vy:(rnd()*2-1)*.05,id:i}));
+let hsSel=null,hsRun=true;
+function drawHS(){
+  const[x,w,h]=cvs("hsCanvas");x.clearRect(0,0,w,h);const t=T();
+  x.strokeStyle=css("--qing");x.lineWidth=1;x.strokeRect(40,10,w-54,h-40);
+  x.fillStyle=css("--dan");x.font="11px IBM Plex Mono";
+  x.fillText(t.hsLabels.x,w/2-30,h-8);x.save();x.translate(12,h/2+26);x.rotate(-Math.PI/2);
+  x.fillText(t.hsLabels.y,0,0);x.restore();
+  const px=v=>40+(w-54)*v/24,py=v=>10+(h-50)*(1-(v+8)/16);
+  x.strokeStyle=css("--qing");x.setLineDash([3,5]);x.beginPath();x.moveTo(40,py(0));x.lineTo(w-14,py(0));x.stroke();x.setLineDash([]);
+  HS.forEach(p=>{x.beginPath();x.arc(px(p.to),py(p.chg),2.5+p.vol*.9,0,7);
+    x.fillStyle=p.chg>=0?css("--up"):css("--dn");x.globalAlpha=p===hsSel?1:.55;x.fill();
+    if(p===hsSel){x.globalAlpha=1;x.strokeStyle=css("--jiao");x.lineWidth=1.6;x.stroke();}});
+  x.globalAlpha=1;
+}
+function hsTick(){if(!hsRun)return;HS.forEach(p=>{p.chg=Math.max(-8,Math.min(8,p.chg+p.vy+(rnd()*2-1)*.12));
+  p.to=Math.max(.5,Math.min(23.5,p.to+p.vx+(rnd()*2-1)*.1));});drawHS();}
+if(!REDUCED)setInterval(hsTick,120);
+$id("hsCanvas").addEventListener("click",e=>{
+  const r=e.target.getBoundingClientRect(),w=r.width,h=r.height;
+  const px=v=>40+(w-54)*v/24,py=v=>10+(h-50)*(1-(v+8)/16);
+  let best=null,bd=1e9;HS.forEach(p=>{const d=(px(p.to)-(e.clientX-r.left))**2+(py(p.chg)-(e.clientY-r.top))**2;
+    if(d<bd){bd=d;best=p;}});
+  if(bd<900){hsSel=best;drawHS();drawIntra(best);}});
+function drawIntra(p){
+  const[x,w,h]=cvs("hsIntra");x.clearRect(0,0,w,h);
+  const n=240,base=100;let v=base;const ys=[];const r2=mulberry32(1234+p.id);
+  for(let i=0;i<n;i++){v*=1+(p.chg/100)/n+(r2()*2-1)*.0016;ys.push(v);}
+  const lo=Math.min(...ys),hi=Math.max(...ys);
+  x.strokeStyle=css("--qing");x.strokeRect(2,2,w-4,h-4);
+  x.strokeStyle=p.chg>=0?css("--up"):css("--dn");x.lineWidth=1.6;x.beginPath();
+  ys.forEach((y,i)=>{const X=4+(w-8)*i/(n-1),Y=6+(h-12)*(1-(y-lo)/(hi-lo||1));i?x.lineTo(X,Y):x.moveTo(X,Y);});x.stroke();
+  x.fillStyle=css("--dan");x.font="11px IBM Plex Mono";
+  x.fillText(`#${p.id+1}  ${p.chg>=0?"+":""}${p.chg.toFixed(2)}%`,10,16);
+  $id("hsClick").textContent="";
+}
+
+/* ---------- ③ SARIMA via webR ---------- */
+function drawFC(pred,se){
+  window.__fcP=pred;window.__fcSE=se;
+  const[x,w,h]=cvs("fcCanvas");x.clearRect(0,0,w,h);
+  const hist=RETAIL,n=hist.length,m=pred?pred.length:12;
+  const all=pred?hist.concat(pred):hist;
+  const lo=Math.min(...all)-(se?Math.max(...se)*2:6),hi=Math.max(...all)+(se?Math.max(...se)*2:6);
+  const px=i=>14+(w-28)*i/(n+m-1),py=v=>12+(h-40)*(1-(v-lo)/(hi-lo));
+  x.strokeStyle=css("--qing");x.lineWidth=1;x.strokeRect(14,12,w-28,h-40);
+  if(pred){ // the fan: ±1.96·se and ±1·se
+    for(const[k,a]of[[1.96,.10],[1,.18]]){
+      x.fillStyle=css("--shu");x.globalAlpha=a;x.beginPath();
+      pred.forEach((v,i)=>{const X=px(n+i),Y=py(v+k*se[i]);i?x.lineTo(X,Y):x.moveTo(X,Y);});
+      for(let i=m-1;i>=0;i--)x.lineTo(px(n+i),py(pred[i]-k*se[i]));
+      x.closePath();x.fill();x.globalAlpha=1;}}
+  x.strokeStyle=css("--nong");x.lineWidth=1.6;x.beginPath();
+  hist.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(0),py(v)));x.stroke();
+  if(pred){x.strokeStyle=css("--shu");x.lineWidth=2;x.setLineDash([6,4]);x.beginPath();
+    x.moveTo(px(n-1),py(hist[n-1]));pred.forEach((v,i)=>x.lineTo(px(n+i),py(v)));x.stroke();x.setLineDash([]);}
+  x.fillStyle=css("--dan");x.font="11px IBM Plex Mono";
+  x.fillText(pred?"monthly series + 12-step SARIMA forecast (fan = ±1·se, ±1.96·se)":"monthly series — press ▶ to fit in R",20,h-14);
+}
+$id("fcRun").onclick=async()=>{
+  const t=T(),btn=$id("fcRun"),out=$id("rOut");btn.disabled=true;out.hidden=false;
+  const log=(s,cls)=>{const d=document.createElement("div");if(cls)d.className=cls;d.textContent=s;out.appendChild(d);out.scrollTop=out.scrollHeight;};
+  $id("fcState").textContent=t.fcRunning;
+  try{
+    log("> loading webR (R for WebAssembly)…","rin");
+    const {WebR}=await import("https://webr.r-wasm.org/latest/webr.mjs");
+    const webr=new WebR();await webr.init();
+    log("> R is running in your browser. fitting…","rin");
+    const code=`y <- ts(c(${RETAIL.join(",")}), frequency=12)
+cat("series: n =", length(y), " (monthly)\\n")
+fit <- arima(y, order=c(1,1,1), seasonal=list(order=c(0,1,1), period=12))
+print(fit)
+p <- predict(fit, n.ahead=12)
+cat("FORECAST:", paste(round(as.numeric(p$pred),3), collapse=","), "\\n")
+cat("SE:", paste(round(as.numeric(p$se),3), collapse=","), "\\n")`;
+    const shelter=await new webr.Shelter();
+    const res=await shelter.captureR(code);
+    let pred=null,se=null;
+    for(const o of res.output){const s=o.data;
+      if(typeof s!=="string")continue;
+      log(s,o.type==="stderr"?"rerr":"");
+      if(s.startsWith("FORECAST:"))pred=s.slice(9).trim().split(",").map(Number);
+      if(s.startsWith("SE:"))se=s.slice(3).trim().split(",").map(Number);}
+    shelter.purge();
+    if(pred&&se){drawFC(pred,se);window.__rRan=true;btn.textContent="✓ R";$id("fcState").textContent="";}
+    else throw new Error("no forecast lines captured");
+  }catch(err){
+    log("! webR unavailable ("+err.message+") — falling back to a JS Holt-Winters fit","rerr");
+    const a=.35,b=.06,g=.28,P=12;let lvl=RETAIL[0],tr=0;const s=Array(P).fill(0);
+    RETAIL.forEach((v,i)=>{const si=i%P,pl=lvl;lvl=a*(v-s[si])+(1-a)*(lvl+tr);
+      tr=b*(lvl-pl)+(1-b)*tr;s[si]=g*(v-lvl)+(1-g)*s[si];});
+    const pred=Array.from({length:12},(_,i)=>+(lvl+tr*(i+1)+s[(RETAIL.length+i)%P]).toFixed(2));
+    const se=Array.from({length:12},(_,i)=>+(2.2*Math.sqrt(i+1)).toFixed(2));
+    drawFC(pred,se);btn.textContent=T().fcRun;$id("fcState").textContent="";
+  }finally{btn.disabled=false;}
+};
+
+/* ---------- ④ audio-ML staged bake-off ---------- */
+const ML={stages:["stage 1","stage 2","final"],models:["linear","tree","forest","SVM","XGBoost"],
+  acc:[[62,66,71,73,74],[68,72,78,80,83],[71,76,84,86,91]]};
+function drawML(){
+  const[x,w,h]=cvs("mlCanvas");x.clearRect(0,0,w,h);
+  const inks=[css("--qing"),css("--dan"),css("--zhong"),css("--nong"),css("--jiao")];
+  const gw=(w-60)/3;
+  ML.stages.forEach((st,si)=>{
+    x.fillStyle=css("--dan");x.font="11px IBM Plex Mono";x.fillText(st,40+si*gw+gw/2-18,h-8);
+    ML.models.forEach((m,mi)=>{
+      const bw=(gw-40)/5,X=50+si*gw+mi*bw,acc=ML.acc[si][mi],BH=(h-58)*acc/100;
+      x.fillStyle=inks[mi];x.globalAlpha=.9;x.fillRect(X,h-28-BH,bw-5,BH);x.globalAlpha=1;
+      if(si===2){x.save();x.translate(X+bw/2-2,h-34-BH);x.rotate(-Math.PI/2);
+        x.fillStyle=css("--dan");x.font="9.5px IBM Plex Mono";x.fillText(m+" "+acc+"%",0,3);x.restore();}});});
+  x.fillStyle=css("--shu");x.font="600 11px IBM Plex Mono";
+  x.fillText("★ 91%",50+2*gw+4*((gw-40)/5),26);
+}
+
+/* ---------- the ink map ---------- */
+function mapCard(c){
+  const t=T(),d=t.mapCities[c]||t.mapCities.hk;
+  $id("mapCard").innerHTML=`<b>${esc(d[0])}</b> — ${esc(d[1])}`;
+  document.querySelectorAll("#inkmap .city").forEach(g=>g.classList.toggle("on",g.dataset.c===c));
+}
+document.querySelectorAll("#inkmap .city").forEach(g=>{
+  g.addEventListener("pointerenter",()=>mapCard(g.dataset.c));
+  g.addEventListener("click",()=>mapCard(g.dataset.c));});
+mapCard("hk");
+(()=>{const r=$id("routePath");if(!r||REDUCED)return;const L=r.getTotalLength();
+  r.style.strokeDasharray="7 9";r.style.strokeDashoffset=L;
+  new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+    r.style.transition="stroke-dashoffset 2.6s ease";r.style.strokeDashoffset=0;}}),{threshold:.3}).observe($id("inkmap"));})();
+
+/* initial draws + redraw on resize */
+addEventListener("resize",()=>{clearTimeout(window.__rt);window.__rt=setTimeout(()=>{drawBT();drawHS();drawML();drawFC(window.__fcP,window.__fcSE);},250)});
+drawBT();drawHS();drawML();drawFC(null,null);
+</script>
+</body>
+</html>

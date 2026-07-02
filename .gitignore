@@ -1,0 +1,4 @@
+private/data/
+private.json
+__pycache__/
+legacy/

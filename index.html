@@ -637,10 +637,10 @@ function setMode(m){htmlEl.dataset.mode=m;mBtn.textContent=m==="light"?"夜 · d
   try{localStorage.setItem("mode",m)}catch(_){}
   if(window.__inkUniforms)window.__inkUniforms.uDark.value=m==="dark"?1:0;
   drawBT();drawML();drawFC(window.__fcP,window.__fcSE);}
-setMode((()=>{try{return localStorage.getItem("mode")}catch(_){return null}})()||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
 mBtn.onclick=()=>setMode(htmlEl.dataset.mode==="light"?"dark":"light");
+/* boot setMode deferred to end-of-script (drawML needs const ML initialized) */
 LANG=(()=>{try{return localStorage.getItem("lang")}catch(_){return null}})()||"en";
-render();
+/* boot render deferred to end-of-script — consts (css/ML/…) must init first */
 
 /* reveals + rail highlight */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")}),{threshold:.1});
@@ -706,7 +706,7 @@ if(!REDUCED)addEventListener("pointerdown",e=>{if(e.target.closest("a,button,inp
 function cvs(id){const c=$id(id),r=Math.min(devicePixelRatio,2),w=c.clientWidth||c.parentElement.clientWidth;
   c.width=w*r;c.height=+c.getAttribute("height")*r;const x=c.getContext("2d");x.scale(r,r);
   return[x,w,+c.getAttribute("height")];}
-const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
 
 /* ---------- ① backtester ---------- */
 function sma(a,n){return a.map((_,i)=>i<n-1?null:a.slice(i-n+1,i+1).reduce((s,v)=>s+v,0)/n);}
@@ -880,6 +880,8 @@ mapCard("hk");
 
 /* initial draws + redraw on resize */
 addEventListener("resize",()=>{clearTimeout(window.__rt);window.__rt=setTimeout(()=>{drawBT();drawHS();drawML();drawFC(window.__fcP,window.__fcSE);},250)});
+setMode((()=>{try{return localStorage.getItem("mode")}catch(_){return null}})()||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
+render();          /* boot: safe now — every helper and const above is initialized */
 drawBT();drawHS();drawML();drawFC(null,null);
 </script>
 </body>

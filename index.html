@@ -180,44 +180,63 @@ footer{padding:60px 8vw 80px;text-align:center;color:var(--dan);font-size:12.5px
 footer .enso-f{font-family:"Zen Old Mincho",serif;font-size:30px;color:var(--zhong);display:block;margin-bottom:10px}
 
 
-/* ── 问墨 inkchat: vertical hand-scroll Q&A ── */
+/* ── 问墨 inkchat v2: language-adaptive hand-scroll ── */
 #inkTab{position:fixed;right:0;top:52%;z-index:60;writing-mode:vertical-rl;background:var(--paper,#f5f1e8);
   border:1.5px solid #b43a2b;border-right:none;color:#b43a2b;font:700 14px/1.4 "Zen Old Mincho","Noto Serif SC",serif;
-  letter-spacing:.3em;padding:14px 8px;border-radius:6px 0 0 6px;cursor:pointer;box-shadow:0 2px 12px rgba(28,26,23,.12)}
-#inkTab:hover{background:#b43a2b;color:#f5f1e8}
-#inkDrawer{position:fixed;top:0;right:-560px;width:min(540px,96vw);height:100dvh;z-index:70;background:#f5f1e8;
+  letter-spacing:.3em;padding:14px 8px;border-radius:6px 0 0 6px;cursor:pointer;box-shadow:0 2px 12px rgba(28,26,23,.12);
+  animation:inkBreath 3.2s ease-in-out infinite}
+@keyframes inkBreath{0%,100%{box-shadow:0 2px 12px rgba(180,58,43,.12)}50%{box-shadow:0 2px 18px rgba(180,58,43,.35)}}
+#inkTab:hover{background:#b43a2b;color:#f5f1e8;animation:none}
+#inkDrawer{position:fixed;top:0;right:-580px;width:min(560px,100vw);height:100dvh;z-index:70;background:#f5f1e8;
   border-left:1px solid #d9d4c9;box-shadow:-8px 0 30px rgba(28,26,23,.15);transition:right .45s cubic-bezier(.2,.8,.2,1);
   display:flex;flex-direction:column;font-family:"Noto Serif SC",serif;color:#1c1a17}
 #inkDrawer.open{right:0}
-#inkDrawer .hd{display:flex;gap:10px;align-items:flex-start;padding:18px 18px 10px}
-#inkDrawer .hd .v{writing-mode:vertical-rl;font:700 22px/1.3 "Zen Old Mincho",serif;letter-spacing:.26em;max-height:110px;pointer-events:none}
-#inkDrawer .hd .seal{background:#b43a2b;color:#f5f1e8;writing-mode:vertical-rl;font:700 10px/1 serif;padding:5px 3px;border-radius:2px;flex:0 0 auto;width:20px;height:max-content;align-self:flex-start;pointer-events:none}
-#inkDrawer .hd p{margin:0;flex:1;color:#57514a;font-size:11.5px;line-height:1.9}
-#inkDrawer .hd button{border:none;background:none;color:#9a938a;font-size:20px;cursor:pointer}
-#inkGate{padding:8px 18px;display:flex;gap:8px;flex-wrap:wrap}
-#inkGate input{flex:1;min-width:120px;padding:10px;border:1px solid #d9d4c9;background:#faf8f2;font-family:inherit;font-size:13px}
-#inkGate button{padding:10px 18px;border:1.5px solid #b43a2b;background:none;color:#b43a2b;font-family:inherit;
+#inkDrawer .hd{display:flex;gap:12px;align-items:center;padding:16px 18px 10px;border-bottom:1px dashed #d9d4c9}
+#inkDrawer .hd .v{writing-mode:vertical-rl;font:700 20px/1.3 "Zen Old Mincho",serif;letter-spacing:.24em;max-height:88px;pointer-events:none}
+#inkDrawer .hd .seal{background:#b43a2b;color:#f5f1e8;writing-mode:vertical-rl;font:700 10px/1 serif;padding:5px 3px;
+  border-radius:2px;flex:0 0 auto;width:20px;height:max-content;align-self:center;pointer-events:none}
+#inkDrawer .hd p{margin:0;flex:1;color:#57514a;font-size:11.5px;line-height:1.8}
+#inkDrawer .hd button{border:none;background:none;color:#9a938a;font-size:22px;cursor:pointer;padding:6px}
+#inkDrawer .hd button:hover{color:#b43a2b}
+#inkGate{padding:14px 18px;display:flex;gap:8px;flex-wrap:wrap}
+#inkGate input{flex:1;min-width:130px;padding:12px;border:1px solid #d9d4c9;background:#faf8f2;font-family:inherit;font-size:16px}
+#inkGate button{padding:12px 20px;border:1.5px solid #b43a2b;background:none;color:#b43a2b;font-family:inherit;
   font-weight:700;letter-spacing:.2em;cursor:pointer}
 #inkGate button:hover{background:#b43a2b;color:#f5f1e8}
-#inkScroll{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;gap:0;padding:12px 14px;
-  background:linear-gradient(#f5f1e8,#f2eee4)}
-.inkQA{writing-mode:vertical-rl;max-height:100%;font-size:13.5px;line-height:2;letter-spacing:.08em;
-  padding:6px 10px;border-left:1px dashed #d9d4c9}
-.inkQA .who{font-weight:700;color:#b43a2b;letter-spacing:.2em;margin-bottom:8px}
-.inkQA.q .who{color:#4a453d}
-.inkQA.a{color:#2b2723}
-.inkQA.q{color:#57514a}
+#inkGate .err{width:100%;color:#b43a2b;font-size:11.5px}
+#inkScroll{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;align-items:stretch;gap:10px;
+  padding:14px;background:linear-gradient(#f5f1e8,#f2eee4)}
+.leaf{flex:0 0 auto;animation:leafIn .5s ease both}
+@keyframes leafIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.leaf .who{font-weight:700;letter-spacing:.18em;color:#b43a2b;font-size:11px;margin-bottom:6px}
+.leaf.q .who{color:#4a453d}
+.leaf.zh{writing-mode:vertical-rl;max-height:100%;font-size:13.5px;line-height:2;letter-spacing:.08em;
+  padding:8px 10px;border-left:1px dashed #d9d4c9}
+.leaf.zh .who{writing-mode:vertical-rl;margin:0 0 10px}
+.leaf.en{width:min(300px,72vw);max-height:100%;overflow-y:auto;font-size:13px;line-height:1.85;
+  background:#faf8f2;border:1px solid #e3ded2;border-radius:3px;padding:12px 14px;align-self:center;
+  box-shadow:0 1px 6px rgba(28,26,23,.05)}
+.leaf .txt{white-space:pre-wrap}
+.inkWait i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#b43a2b;
+  animation:inkPulse 1.1s ease-in-out infinite}
+@keyframes inkPulse{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+#inkHints{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 8px}
+#inkHints button{border:1px solid #d9d4c9;background:#faf8f2;color:#57514a;border-radius:14px;
+  padding:7px 13px;font-family:inherit;font-size:12px;cursor:pointer}
+#inkHints button:hover{border-color:#b43a2b;color:#b43a2b}
 #inkAsk{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #d9d4c9;background:#faf8f2}
-#inkAsk input{flex:1;padding:11px;border:1px solid #d9d4c9;background:#f5f1e8;font-family:inherit;font-size:13.5px}
-#inkAsk button{padding:11px 18px;border:1.5px solid #1c1a17;background:none;color:#1c1a17;font-family:inherit;
-  font-weight:700;letter-spacing:.24em;cursor:pointer}
+#inkAsk input{flex:1;padding:12px;border:1px solid #d9d4c9;background:#f5f1e8;font-family:inherit;font-size:16px}
+#inkAsk button{padding:12px 20px;border:1.5px solid #1c1a17;background:none;color:#1c1a17;font-family:inherit;
+  font-weight:700;letter-spacing:.24em;cursor:pointer;min-width:88px}
 #inkAsk button:hover{background:#1c1a17;color:#f5f1e8}
-#inkAsk button:disabled{opacity:.4;cursor:wait}
-#inkNote{padding:0 18px 10px;color:#9a938a;font-size:10.5px;line-height:1.8}
+#inkAsk button:disabled{opacity:.45;cursor:wait}
 html[data-mode="dark"] #inkDrawer{background:#171512;color:#e8e2d5;border-left-color:#3a352d}
+html[data-mode="dark"] #inkDrawer .hd{border-bottom-color:#3a352d}
 html[data-mode="dark"] #inkGate input,html[data-mode="dark"] #inkAsk input{background:#1f1c18;border-color:#3a352d;color:#e8e2d5}
 html[data-mode="dark"] #inkScroll{background:linear-gradient(#171512,#14120f)}
-html[data-mode="dark"] .inkQA.a{color:#e8e2d5}
+html[data-mode="dark"] .leaf.en{background:#1c1915;border-color:#3a352d;box-shadow:none}
+html[data-mode="dark"] .leaf.zh{border-left-color:#3a352d}
+html[data-mode="dark"] #inkHints button{background:#1c1915;border-color:#3a352d;color:#b5ad9e}
 html[data-mode="dark"] #inkAsk button{border-color:#e8e2d5;color:#e8e2d5}
 html[data-mode="dark"] #inkTab{background:#171512}
 
@@ -951,63 +970,97 @@ drawBT();drawHS();drawML();drawFC(null,null);
 </script>
 
 <button id="inkTab" aria-label="ask about Eric">问 墨</button>
-<aside id="inkDrawer" aria-label="Q and A">
+<aside id="inkDrawer" aria-label="Q and A with Eric's assistant">
   <div class="hd"><span class="v">问墨</span><span class="seal">Q·A</span>
-    <p>书僮代主人答问 — gemma·31b 于 A100 亲答。留下尊姓大名与口令即可对谈；所有问答会被主人记录。<br>
-    Ask Eric's ink attendant anything about his work. Name + passcode required; conversations are logged.</p>
+    <p><b>Ask about Eric — answered live by his own AI serving stack.</b><br>
+    书僮代主人答问，中英皆可。留名与口令即可入座；问答会被主人记录。<br>
+    Leave a name + the passcode you were given. Conversations are logged.</p>
     <button id="inkClose" aria-label="close">✕</button></div>
   <div id="inkGate">
-    <input id="inkName" placeholder="尊姓大名 · your name" maxlength="24"/>
+    <input id="inkName" placeholder="尊姓大名 · your name" maxlength="24" autocomplete="name"/>
     <input id="inkPass" placeholder="口令 · passcode" maxlength="8"/>
-    <button id="inkEnter">递 帖</button>
+    <button id="inkEnter">入 座</button>
+    <span class="err" id="inkGateErr"></span>
   </div>
+  <div id="inkHints" style="display:none"></div>
   <div id="inkScroll"></div>
   <div id="inkAsk" style="display:none">
-    <input id="inkQ" placeholder="问主人之事…（右起竖读，如展手卷）" maxlength="400"/>
+    <input id="inkQ" placeholder="中文竖读如手卷 · English lies flat" maxlength="400"/>
     <button id="inkSend">呈 上</button>
   </div>
-  <div id="inkNote">竖排右起，如古手卷 — 新问答自左侧展开。答不逾百二十字。</div>
 </aside>
 <script>
 (function(){
 const API="https://eric.aivmelna.com/showcase/inkchat/api/ask";
 const $=id=>document.getElementById(id);
-const tab=$("inkTab"),dr=$("inkDrawer");
-tab.onclick=()=>{dr.classList.add("open");};
+const dr=$("inkDrawer");
+$("inkTab").onclick=()=>dr.classList.add("open");
 $("inkClose").onclick=()=>dr.classList.remove("open");
+const esc=t=>t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const isZh=t=>{let c=0;for(const ch of t)if(ch>="\u4e00"&&ch<="\u9fff")c++;return c>=Math.max(2,t.length*.2);};
+const HINTS=[["Eric 最擅长什么？","zh"],["What has Eric actually built?","en"],["他的量化与计量背景？","zh"],["Why should we interview him?","en"]];
 let cred=null;
 try{cred=JSON.parse(localStorage.getItem("inkchat_cred")||"null");}catch(_){}
-function gateDone(){$("inkGate").style.display="none";$("inkAsk").style.display="flex";}
-if(cred&&cred.name){$("inkName").value=cred.name;$("inkPass").value=cred.pass||"";gateDone();}
-$("inkEnter").onclick=()=>{
-  const n=$("inkName").value.trim(),p=$("inkPass").value.trim();
-  if(n.length<2){$("inkName").focus();return;}
-  cred={name:n,pass:p};
-  try{localStorage.setItem("inkchat_cred",JSON.stringify(cred));}catch(_){}
-  gateDone();$("inkQ").focus();
-};
-function col(cls,who,text){
-  const d=document.createElement("div");d.className="inkQA "+cls;
-  d.innerHTML='<div class="who">'+who+'</div>'+text.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  const sc=$("inkScroll");sc.insertBefore(d,sc.firstChild);sc.scrollLeft=0;
+
+function leaf(cls,lang,who,text,wait){
+  const d=document.createElement("div");
+  d.className="leaf "+cls+" "+lang;
+  d.innerHTML='<div class="who">'+who+'</div><span class="txt"></span>'+(wait?' <span class="inkWait"><i></i></span>':'');
+  d.querySelector(".txt").textContent=text;
+  const sc=$("inkScroll");
+  sc.insertBefore(d,sc.firstChild);
   return d;
 }
+function settle(d,text){                       // swap text without re-parsing = no blink
+  d.querySelector(".txt").textContent=text;
+  const w=d.querySelector(".inkWait");if(w)w.remove();
+}
+function hints(){
+  const h=$("inkHints");h.style.display="flex";
+  h.innerHTML="";
+  HINTS.forEach(([t])=>{const b=document.createElement("button");b.textContent=t;
+    b.onclick=()=>{$("inkQ").value=t;send();};h.appendChild(b);});
+}
+function enter(){
+  $("inkGate").style.display="none";$("inkAsk").style.display="flex";
+  hints();
+  if(!$("inkScroll").children.length)
+    leaf("a", "zh", "墨僮", (cred.name)+"阁下安好 — 在下墨僮，代主人卢东奇答问。中文竖排如手卷，英文平铺如笺。请指教。");
+  $("inkQ").focus();
+}
+if(cred&&cred.name){$("inkName").value=cred.name;$("inkPass").value=cred.pass||"";enter();}
+$("inkEnter").onclick=()=>{
+  const n=$("inkName").value.trim(),p=$("inkPass").value.trim();
+  if(n.length<2){$("inkGateErr").textContent="名字至少两个字符 · name too short";return;}
+  if(!p){$("inkGateErr").textContent="请填口令 · passcode required";return;}
+  cred={name:n,pass:p};
+  try{localStorage.setItem("inkchat_cred",JSON.stringify(cred));}catch(_){}
+  enter();
+};
+let busy=false;
 async function send(){
   const q=$("inkQ").value.trim();
-  if(!q||!cred)return;
-  $("inkQ").value="";$("inkSend").disabled=true;
-  col("q",cred.name+" 问",q);
-  const wait=col("a","墨僮 答","…研墨中…");
+  if(!q||!cred||busy)return;
+  busy=true;$("inkSend").disabled=true;$("inkQ").value="";
+  const ql=isZh(q)?"zh":"en";
+  leaf("q",ql,esc(cred.name)+(ql==="zh"?" 问":" asks"),q);
+  const wait=leaf("a",ql,ql==="zh"?"墨僮 答":"Ink attendant","",true);
+  $("inkScroll").scrollLeft=0;
   try{
     const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({name:cred.name,passcode:cred.pass,question:q})});
     const d=await r.json();
-    if(!r.ok){wait.innerHTML='<div class="who">墨僮 答</div>'+(d.err||"礼数未合，请重递名帖。");
+    if(!r.ok){
+      settle(wait,d.err||(ql==="zh"?"礼数未合，请重递名帖。":"Something went wrong — please re-enter."));
       if(r.status===403){localStorage.removeItem("inkchat_cred");cred=null;
-        $("inkGate").style.display="flex";$("inkAsk").style.display="none";}}
-    else wait.innerHTML='<div class="who">墨僮 答</div>'+(d.answer||"…").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  }catch(e){wait.innerHTML='<div class="who">墨僮 答</div>（山径不通，稍后再来。）';}
-  $("inkSend").disabled=false;
+        $("inkGate").style.display="flex";$("inkAsk").style.display="none";
+        $("inkGateErr").textContent="口令不对 · wrong passcode";}
+    }else{
+      if(d.lang&&d.lang!==ql){wait.classList.remove(ql);wait.classList.add(d.lang);}
+      settle(wait,d.answer||"…");
+    }
+  }catch(e){settle(wait,ql==="zh"?"（山径不通，稍后再来。）":"(The mountain path is blocked — please try again soon.)");}
+  busy=false;$("inkSend").disabled=false;
 }
 $("inkSend").onclick=send;
 $("inkQ").addEventListener("keydown",e=>{if(e.key==="Enter")send();});

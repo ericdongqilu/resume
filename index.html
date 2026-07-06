@@ -245,11 +245,31 @@ html[data-mode="dark"] #inkTab{background:#171512}
 
 
 /* ── 式 · the equation scroll: chaos that settles into order ── */
-#eq .eqgrid{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
+#eq .eqwrap{position:relative;background:radial-gradient(120% 90% at 50% 0%,rgba(158,132,84,.10),rgba(158,132,84,.03) 55%,transparent),var(--card,#faf8f2);
+  border:1px solid #d8cdb4;outline:3px double rgba(138,109,59,.35);outline-offset:6px;border-radius:4px;padding:18px 16px 22px;overflow:hidden}
+html[data-mode="dark"] #eq .eqwrap{background:radial-gradient(120% 90% at 50% 0%,rgba(158,132,84,.10),transparent),#1a1713;border-color:#3f382c;outline-color:rgba(158,132,84,.28)}
+#eqCompass{position:absolute;top:10px;right:12px;width:56px;height:56px;opacity:.55;pointer-events:none;z-index:7}
+#eqLegend{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+#eqLegend span{display:inline-flex;align-items:center;gap:6px;font:600 10.5px/1 ui-monospace,monospace;color:#57514a;
+  border:1px solid #d8cdb4;border-radius:2px;padding:5px 9px;background:rgba(250,248,242,.7)}
+html[data-mode="dark"] #eqLegend span{background:#1c1915;border-color:#3a352d;color:#b5ad9e}
+#eqLegend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+#eq .eqgrid{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.eqfam{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:14px 0 2px;font:700 13px/1.5 "Zen Old Mincho","Noto Serif SC",serif;letter-spacing:.18em}
+.eqfam:first-of-type{margin-top:2px}
+.eqfam i{width:22px;height:4px;border-radius:2px}
+.eqfam small{font:600 9.5px/1 ui-monospace,monospace;color:#9a938a;letter-spacing:.06em}
+.eqcard{border-left:3px solid var(--fc,#b43a2b)}
+.eqcard .p-tagx{display:inline-block;font:700 9px/1 ui-monospace,monospace;letter-spacing:.08em;color:#fff;
+  background:var(--fc);border-radius:2px;padding:3px 6px;margin-bottom:6px}
+.eqcard .eqref{color:var(--fc);border-color:var(--fc)}
+.eqcard .eqref:hover{background:var(--fc);color:#f5f1e8}
+.eqx{position:absolute;top:-9px;right:-6px;font:900 22px/1 serif;color:#b43a2b;transform:rotate(12deg);text-shadow:0 1px 0 #f5f1e8}
 #eqWeb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;opacity:0;transition:opacity 1.2s ease}
 #eqWeb.show{opacity:1}
 #eqWeb path{fill:none;stroke:#b43a2b;stroke-width:1.6;stroke-dasharray:1 7;stroke-linecap:round;opacity:.55;
   animation:eqMarch 26s linear infinite}
+#eqWeb path.route{stroke:#8a6d3b;stroke-width:2.6;stroke-dasharray:7 8;opacity:.5;animation-duration:40s}
 @keyframes eqMarch{to{stroke-dashoffset:-400}}
 #eqWeb text{font:600 10px ui-monospace,monospace;fill:#8d5b52;letter-spacing:.04em}
 #eqWeb rect{fill:var(--card,#faf8f2);opacity:.92}
@@ -625,7 +645,13 @@ tc: {
   <div class="sec-head rv in"><span class="sec-han">式</span><span class="sec-title" id="eqTitle">THE EQUATIONS I THINK IN</span>
     <span class="sec-note" id="eqNote">from Hyndman & Athanasopoulos, FPP3 — each one cited</span>
     <button id="eqOrder">整 · order</button></div>
-  <div class="eqgrid" id="eqGrid"></div>
+  <div class="eqwrap">
+    <svg id="eqCompass" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="#8a6d3b" stroke-width="1.4"/>
+      <path d="M30 8 L34 30 L30 52 L26 30 Z" fill="#8a6d3b"/><path d="M30 8 L34 30 L30 34 L26 30 Z" fill="#b43a2b"/>
+      <text x="30" y="6" text-anchor="middle" font-size="8" fill="#8a6d3b" font-family="serif">北</text></svg>
+    <div id="eqLegend"></div>
+    <div class="eqgrid" id="eqGrid"></div>
+  </div>
 </section>
 
 <section id="map">
@@ -1188,52 +1214,58 @@ $("inkQ").addEventListener("keydown",e=>{if(e.key==="Enter")send();});
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>
 (function(){
+const FAMS={
+ fund:{c:"#8a6d3b",en:"I · Foundations & preparation",sc:"一 · 基石与备料",tc:"一 · 基石與備料"},
+ smooth:{c:"#4f7a68",en:"II · Exponential smoothing",sc:"二 · 指数平滑",tc:"二 · 指數平滑"},
+ arima:{c:"#55627e",en:"III · ARIMA country",sc:"三 · ARIMA 之国",tc:"三 · ARIMA 之國"},
+ reg:{c:"#8c566e",en:"IV · Regression shores",sc:"四 · 回归之滨",tc:"四 · 迴歸之濱"},
+ diag:{c:"#b43a2b",en:"V · Diagnostics pass",sc:"五 · 诊断隘口",tc:"五 · 診斷隘口"},
+ acc:{c:"#46707e",en:"VI · Accuracy vault ✕",sc:"六 · 精度宝库 ✕",tc:"六 · 精度寶庫 ✕"}};
 const EQS=[
- {en:"ARIMA(p, d, q) — backshift form",sc:"差分自回归移动平均 · 后移算子式",tc:"差分自迴歸移動平均 · 後移算子式",
-  tex:"(1-\\phi_1 B-\\cdots-\\phi_p B^p)\\,(1-B)^d y_t = c+(1+\\theta_1 B+\\cdots+\\theta_q B^q)\\,\\varepsilon_t",
-  ref:"FPP3 §9.5 · eq (9.2)",url:"https://otexts.com/fpp3/non-seasonal-arima.html"},
- {en:"Seasonal ARIMA(1,1,1)(1,1,1)₄",sc:"季节性 ARIMA · 乘法结构",tc:"季節性 ARIMA · 乘法結構",
-  tex:"(1-\\phi_1 B)(1-\\Phi_1 B^4)(1-B)(1-B^4)\\,y_t=(1+\\theta_1 B)(1+\\Theta_1 B^4)\\,\\varepsilon_t",
-  ref:"FPP3 §9.9",url:"https://otexts.com/fpp3/seasonal-arima.html"},
- {en:"Holt-Winters additive",sc:"霍尔特-温特斯 加法季节",tc:"霍爾特-溫特斯 加法季節",
-  tex:"\\begin{aligned}\\hat y_{t+h|t}&=\\ell_t+hb_t+s_{t+h-m(k+1)}\\\\ \\ell_t&=\\alpha(y_t-s_{t-m})+(1-\\alpha)(\\ell_{t-1}+b_{t-1})\\\\ b_t&=\\beta^*(\\ell_t-\\ell_{t-1})+(1-\\beta^*)b_{t-1}\\\\ s_t&=\\gamma(y_t-\\ell_{t-1}-b_{t-1})+(1-\\gamma)s_{t-m}\\end{aligned}",
-  ref:"FPP3 §8.3",url:"https://otexts.com/fpp3/holt-winters.html"},
- {en:"Simple exponential smoothing",sc:"简单指数平滑 · 加权平均式",tc:"簡單指數平滑 · 加權平均式",
-  tex:"\\hat y_{T+1|T}=\\alpha y_T+(1-\\alpha)\\,\\hat y_{T|T-1},\\qquad 0\\le\\alpha\\le 1",
-  ref:"FPP3 §8.1",url:"https://otexts.com/fpp3/ses.html"},
- {en:"Drift method",sc:"漂移法",tc:"漂移法",
-  tex:"\\hat y_{T+h|T}=y_T+\\frac{h}{T-1}\\sum_{t=2}^{T}(y_t-y_{t-1})=y_T+h\\Big(\\frac{y_T-y_1}{T-1}\\Big)",
-  ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
- {en:"Seasonal naïve",sc:"季节朴素法",tc:"季節樸素法",
-  tex:"\\hat y_{T+h|T}=y_{T+h-m(k+1)}",
-  ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
- {en:"Autocorrelation coefficient",sc:"自相关系数",tc:"自相關係數",
-  tex:"r_k=\\frac{\\sum_{t=k+1}^{T}(y_t-\\bar y)(y_{t-k}-\\bar y)}{\\sum_{t=1}^{T}(y_t-\\bar y)^2}",
-  ref:"FPP3 §2.8",url:"https://otexts.com/fpp3/acf.html"},
- {en:"Ljung-Box portmanteau test",sc:"Ljung-Box 混成检验",tc:"Ljung-Box 混成檢驗",
-  tex:"Q^{*}=T(T+2)\\sum_{k=1}^{\\ell}(T-k)^{-1}\\,r_k^{2}",
-  ref:"FPP3 §5.4",url:"https://otexts.com/fpp3/diagnostics.html"},
- {en:"Prediction interval",sc:"预测区间",tc:"預測區間",
-  tex:"\\hat y_{T+h|T}\;\\pm\;c\\,\\hat\\sigma_h",
-  ref:"FPP3 §5.5",url:"https://otexts.com/fpp3/prediction-intervals.html"},
- {en:"Mean absolute scaled error",sc:"平均绝对比例误差",tc:"平均絕對比例誤差",
-  tex:"q_j=\\frac{e_j}{\\dfrac{1}{T-m}\\sum_{t=m+1}^{T}|y_t-y_{t-m}|},\\qquad \\text{MASE}=\\text{mean}(|q_j|)",
-  ref:"FPP3 §5.8",url:"https://otexts.com/fpp3/accuracy.html"},
- {en:"Corrected Akaike criterion",sc:"修正赤池信息准则",tc:"修正赤池資訊準則",
-  tex:"\\text{AICc}=\\text{AIC}+\\frac{2(p+q+k+1)(p+q+k+2)}{T-p-q-k-2}",
-  ref:"FPP3 §9.6",url:"https://otexts.com/fpp3/arima-estimation.html"}];
-/* the relationships — why these formulas belong to ONE craft */
+ {f:"fund",en:"Mean method",sc:"均值法",tc:"均值法",tex:"\\hat y_{T+h|T}=\\bar y=(y_1+\\cdots+y_T)/T",ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
+ {f:"fund",en:"Naïve method",sc:"朴素法",tc:"樸素法",tex:"\\hat y_{T+h|T}=y_T",ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
+ {f:"fund",en:"Seasonal naïve",sc:"季节朴素法",tc:"季節樸素法",tex:"\\hat y_{T+h|T}=y_{T+h-m(k+1)}",ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
+ {f:"fund",en:"Drift method",sc:"漂移法",tc:"漂移法",tex:"\\hat y_{T+h|T}=y_T+h\\Big(\\frac{y_T-y_1}{T-1}\\Big)",ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
+ {f:"fund",en:"Box-Cox transformation",sc:"Box-Cox 变换",tc:"Box-Cox 變換",tex:"w_t=\\begin{cases}\\log(y_t)&\\lambda=0\\\\ \\big(\\operatorname{sign}(y_t)|y_t|^{\\lambda}-1\\big)/\\lambda&\\text{otherwise}\\end{cases}",ref:"FPP3 §3.1 · eq (3.1)",url:"https://otexts.com/fpp3/transformations.html"},
+ {f:"fund",en:"Moving-average trend",sc:"移动平均趋势",tc:"移動平均趨勢",tex:"\\hat T_t=\\frac{1}{m}\\sum_{j=-k}^{k}y_{t+j},\\qquad m=2k+1",ref:"FPP3 §3.3",url:"https://otexts.com/fpp3/moving-averages.html"},
+ {f:"fund",en:"Classical additive decomposition",sc:"经典加法分解",tc:"經典加法分解",tex:"y_t=S_t+T_t+R_t",ref:"FPP3 §3.4",url:"https://otexts.com/fpp3/classical-decomposition.html"},
+ {f:"smooth",en:"Simple exponential smoothing",sc:"简单指数平滑",tc:"簡單指數平滑",tex:"\\hat y_{T+1|T}=\\alpha y_T+(1-\\alpha)\\,\\hat y_{T|T-1}",ref:"FPP3 §8.1",url:"https://otexts.com/fpp3/ses.html"},
+ {f:"smooth",en:"Holt's linear trend",sc:"Holt 线性趋势",tc:"Holt 線性趨勢",tex:"\\begin{aligned}\\hat y_{t+h|t}&=\\ell_t+hb_t\\\\ \\ell_t&=\\alpha y_t+(1-\\alpha)(\\ell_{t-1}+b_{t-1})\\\\ b_t&=\\beta^*(\\ell_t-\\ell_{t-1})+(1-\\beta^*)b_{t-1}\\end{aligned}",ref:"FPP3 §8.2",url:"https://otexts.com/fpp3/holt.html"},
+ {f:"smooth",en:"Damped trend",sc:"阻尼趋势",tc:"阻尼趨勢",tex:"\\hat y_{t+h|t}=\\ell_t+(\\phi+\\phi^2+\\cdots+\\phi^{h})\\,b_t",ref:"FPP3 §8.2",url:"https://otexts.com/fpp3/holt.html"},
+ {f:"smooth",en:"Holt-Winters additive",sc:"霍尔特-温特斯 加法",tc:"霍爾特-溫特斯 加法",tex:"\\begin{aligned}\\hat y_{t+h|t}&=\\ell_t+hb_t+s_{t+h-m(k+1)}\\\\ \\ell_t&=\\alpha(y_t-s_{t-m})+(1-\\alpha)(\\ell_{t-1}+b_{t-1})\\\\ b_t&=\\beta^*(\\ell_t-\\ell_{t-1})+(1-\\beta^*)b_{t-1}\\\\ s_t&=\\gamma(y_t-\\ell_{t-1}-b_{t-1})+(1-\\gamma)s_{t-m}\\end{aligned}",ref:"FPP3 §8.3",url:"https://otexts.com/fpp3/holt-winters.html"},
+ {f:"smooth",en:"ETS(A,N,N) state space",sc:"ETS(A,N,N) 状态空间",tc:"ETS(A,N,N) 狀態空間",tex:"\\begin{aligned}y_t&=\\ell_{t-1}+\\varepsilon_t\\\\ \\ell_t&=\\ell_{t-1}+\\alpha\\varepsilon_t\\end{aligned}",ref:"FPP3 §8.5",url:"https://otexts.com/fpp3/ets.html"},
+ {f:"arima",en:"Random walk with drift",sc:"带漂移随机游走",tc:"帶漂移隨機遊走",tex:"y_t=c+y_{t-1}+\\varepsilon_t",ref:"FPP3 §9.1",url:"https://otexts.com/fpp3/stationarity.html"},
+ {f:"arima",en:"AR(p) autoregression",sc:"AR(p) 自回归",tc:"AR(p) 自迴歸",tex:"y_t=c+\\phi_1y_{t-1}+\\phi_2y_{t-2}+\\cdots+\\phi_py_{t-p}+\\varepsilon_t",ref:"FPP3 §9.3",url:"https://otexts.com/fpp3/AR.html"},
+ {f:"arima",en:"MA(q) moving average",sc:"MA(q) 移动平均",tc:"MA(q) 移動平均",tex:"y_t=c+\\varepsilon_t+\\theta_1\\varepsilon_{t-1}+\\cdots+\\theta_q\\varepsilon_{t-q}",ref:"FPP3 §9.4",url:"https://otexts.com/fpp3/MA.html"},
+ {f:"arima",en:"ARIMA(p,d,q) — backshift",sc:"ARIMA · 后移算子式",tc:"ARIMA · 後移算子式",tex:"(1-\\phi_1 B-\\cdots-\\phi_p B^p)(1-B)^d y_t = c+(1+\\theta_1 B+\\cdots+\\theta_q B^q)\\varepsilon_t",ref:"FPP3 §9.5 · eq (9.2)",url:"https://otexts.com/fpp3/non-seasonal-arima.html"},
+ {f:"arima",en:"Seasonal ARIMA(1,1,1)(1,1,1)₄",sc:"季节性 ARIMA",tc:"季節性 ARIMA",tex:"(1-\\phi_1 B)(1-\\Phi_1 B^4)(1-B)(1-B^4)y_t=(1+\\theta_1 B)(1+\\Theta_1 B^4)\\varepsilon_t",ref:"FPP3 §9.9",url:"https://otexts.com/fpp3/seasonal-arima.html"},
+ {f:"arima",en:"Corrected Akaike criterion",sc:"修正赤池准则",tc:"修正赤池準則",tex:"\\text{AICc}=\\text{AIC}+\\frac{2(p+q+k+1)(p+q+k+2)}{T-p-q-k-2}",ref:"FPP3 §9.6",url:"https://otexts.com/fpp3/arima-estimation.html"},
+ {f:"reg",en:"Multiple linear regression",sc:"多元线性回归",tc:"多元線性迴歸",tex:"y_t=\\beta_0+\\beta_1x_{1,t}+\\beta_2x_{2,t}+\\cdots+\\beta_kx_{k,t}+\\varepsilon_t",ref:"FPP3 §7.1 · eq (7.1)",url:"https://otexts.com/fpp3/regression-intro.html"},
+ {f:"reg",en:"Regression with ARIMA errors",sc:"带 ARIMA 误差的回归",tc:"帶 ARIMA 誤差的迴歸",tex:"y_t=\\beta_0+\\beta_1x_t+\\eta_t,\\qquad \\eta_t\\sim\\text{ARIMA}",ref:"FPP3 §10.2",url:"https://otexts.com/fpp3/regarima.html"},
+ {f:"diag",en:"Forecast residual",sc:"预测残差",tc:"預測殘差",tex:"e_t=y_t-\\hat y_t",ref:"FPP3 §5.3",url:"https://otexts.com/fpp3/residuals.html"},
+ {f:"diag",en:"Autocorrelation coefficient",sc:"自相关系数",tc:"自相關係數",tex:"r_k=\\frac{\\sum_{t=k+1}^{T}(y_t-\\bar y)(y_{t-k}-\\bar y)}{\\sum_{t=1}^{T}(y_t-\\bar y)^2}",ref:"FPP3 §2.8",url:"https://otexts.com/fpp3/acf.html"},
+ {f:"diag",en:"White-noise bounds",sc:"白噪声界",tc:"白噪聲界",tex:"|r_k|<2/\\sqrt{T}",ref:"FPP3 §2.9",url:"https://otexts.com/fpp3/wn.html"},
+ {f:"diag",en:"Ljung-Box test",sc:"Ljung-Box 检验",tc:"Ljung-Box 檢驗",tex:"Q^{*}=T(T+2)\\sum_{k=1}^{\\ell}(T-k)^{-1}r_k^{2}",ref:"FPP3 §5.4",url:"https://otexts.com/fpp3/diagnostics.html"},
+ {f:"acc",en:"Mean absolute error",sc:"平均绝对误差",tc:"平均絕對誤差",tex:"\\text{MAE}=\\text{mean}(|e_t|)",ref:"FPP3 §5.8",url:"https://otexts.com/fpp3/accuracy.html"},
+ {f:"acc",en:"Root mean squared error",sc:"均方根误差",tc:"均方根誤差",tex:"\\text{RMSE}=\\sqrt{\\text{mean}(e_t^2)}",ref:"FPP3 §5.8",url:"https://otexts.com/fpp3/accuracy.html"},
+ {f:"acc",en:"Mean absolute percentage error",sc:"平均绝对百分比误差",tc:"平均絕對百分比誤差",tex:"\\text{MAPE}=\\text{mean}\\big(|100\\,e_t/y_t|\\big)",ref:"FPP3 §5.8",url:"https://otexts.com/fpp3/accuracy.html"},
+ {f:"acc",en:"Mean absolute scaled error",sc:"平均绝对比例误差",tc:"平均絕對比例誤差",tex:"q_j=\\frac{e_j}{\\dfrac{1}{T-m}\\sum_{t=m+1}^{T}|y_t-y_{t-m}|},\\quad \\text{MASE}=\\text{mean}(|q_j|)",ref:"FPP3 §5.8",url:"https://otexts.com/fpp3/accuracy.html",x:true},
+ {f:"acc",en:"Prediction interval",sc:"预测区间",tc:"預測區間",tex:"\\hat y_{T+h|T}\;\\pm\;c\\,\\hat\\sigma_h",ref:"FPP3 §5.5",url:"https://otexts.com/fpp3/prediction-intervals.html"},
+ {f:"acc",en:"Naïve h-step deviation",sc:"朴素法 h 步标准差",tc:"樸素法 h 步標準差",tex:"\\hat\\sigma_h=\\hat\\sigma\\sqrt{h}",ref:"FPP3 §5.5",url:"https://otexts.com/fpp3/prediction-intervals.html"}];
 const EDGES=[
- {a:6,b:7,en:"r_k feeds Q*",sc:"r_k 入 Q*",tc:"r_k 入 Q*"},
- {a:3,b:2,en:"+ trend + season",sc:"加趋势与季节",tc:"加趨勢與季節"},
- {a:0,b:1,en:"× seasonal factors",sc:"乘季节因子",tc:"乘季節因子"},
- {a:0,b:10,en:"chooses p, q",sc:"以此定阶",tc:"以此定階"},
- {a:5,b:9,en:"scales the error",sc:"充当误差基准",tc:"充當誤差基準"},
- {a:4,b:8,en:"± band around it",sc:"套上预测区间",tc:"套上預測區間"},
- {a:7,b:0,en:"validates residuals",sc:"验其残差",tc:"驗其殘差"}];
-const T={en:{title:"THE EQUATIONS I THINK IN",note:"FPP3, cited — watch the symbols fly home, then the web of kinship appear",order:"整 · order",chaos:"乱 · scatter"},
- sc:{title:"式 — 我用来思考的方程",note:"《FPP3》逐条可溯源 — 符号归位后，亲缘之网自现",order:"整",chaos:"乱"},
- tc:{title:"式 — 我用來思考的方程",note:"《FPP3》逐條可溯源 — 符號歸位後，親緣之網自現",order:"整",chaos:"亂"}};
+ {a:21,b:23,en:"r_k feeds Q*",sc:"r_k 入 Q*",tc:"r_k 入 Q*"},
+ {a:7,b:10,en:"+ trend + season",sc:"加趋势与季节",tc:"加趨勢與季節"},
+ {a:13,b:15,en:"absorbed into ARIMA",sc:"并入 ARIMA",tc:"併入 ARIMA"},
+ {a:15,b:16,en:"× seasonal factors",sc:"乘季节因子",tc:"乘季節因子"},
+ {a:15,b:17,en:"chooses p, q",sc:"以此定阶",tc:"以此定階"},
+ {a:2,b:27,en:"scales the error",sc:"充当误差基准",tc:"充當誤差基準"},
+ {a:20,b:24,en:"e_t feeds every metric",sc:"e_t 入诸度量",tc:"e_t 入諸度量"},
+ {a:23,b:15,en:"validates residuals",sc:"验其残差",tc:"驗其殘差"},
+ {a:18,b:19,en:"errors become η_t",sc:"误差化作 η_t",tc:"誤差化作 η_t"},
+ {a:1,b:29,en:"gives σ̂√h",sc:"给出 σ̂√h",tc:"給出 σ̂√h"}];
+const T={en:{title:"THE TREASURE MAP OF FORECASTING",note:"30 equations, FPP3-cited · six territories · follow the route to the accuracy vault ✕",order:"整 · order",chaos:"乱 · scatter",legend:"map legend"},
+ sc:{title:"式 — 预测藏宝图",note:"三十条方程，逐条溯源《FPP3》· 六大疆域 · 循路而行，直抵精度宝库 ✕",order:"整",chaos:"乱",legend:"图例"},
+ tc:{title:"式 — 預測藏寶圖",note:"三十條方程，逐條溯源《FPP3》· 六大疆域 · 循路而行，直抵精度寶庫 ✕",order:"整",chaos:"亂",legend:"圖例"}};
 const $=id=>document.getElementById(id);
 const grid=$("eqGrid");
 const REDU=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1241,17 +1273,18 @@ const R=(a,b)=>a+Math.random()*(b-a);
 let ordered=false,lifeTimer=null,eqVisible=false;
 function lang(){try{return T[localStorage.getItem("lang")]||T.en;}catch(_){return T.en;}}
 function nameKey(){try{const l=localStorage.getItem("lang");return l==="sc"||l==="tc"?l:"en";}catch(_){return "en";}}
-function edgeKey(){return nameKey();}
 
 function glyphify(card,scattered){
+  let n=0;
   card.querySelectorAll(".katex *").forEach(el=>{
+    if(n>90)return;
     if(el.childElementCount===0&&el.textContent.trim()){
-      el.classList.add("gph");if(scattered)el.classList.add("chaos-g");
-      el.style.setProperty("--gx",R(-260,260).toFixed(0)+"px");
-      el.style.setProperty("--gy",R(-180,180).toFixed(0)+"px");
+      n++;el.classList.add("gph");if(scattered)el.classList.add("chaos-g");
+      el.style.setProperty("--gx",R(-240,240).toFixed(0)+"px");
+      el.style.setProperty("--gy",R(-170,170).toFixed(0)+"px");
       el.style.setProperty("--gr",R(-90,90).toFixed(0)+"deg");
-      el.style.setProperty("--gs",R(.3,2).toFixed(2));
-      el.style.transitionDelay=R(60,1600).toFixed(0)+"ms";
+      el.style.setProperty("--gs",R(.3,1.9).toFixed(2));
+      el.style.transitionDelay=R(60,1500).toFixed(0)+"ms";
     }
   });
 }
@@ -1264,12 +1297,20 @@ function scatterCardVars(d){
 function build(){
   grid.innerHTML='<svg id="eqWeb" aria-hidden="true"></svg>';
   const nk=nameKey();
+  $("eqLegend").innerHTML=Object.entries(FAMS).map(([k,f])=>'<span><i style="background:'+f.c+'"></i>'+f[nk]+'</span>').join("");
+  let lastFam=null,ci=0;
   EQS.forEach((e,i)=>{
+    if(e.f!==lastFam){lastFam=e.f;
+      const fb=document.createElement("div");fb.className="eqfam";
+      fb.innerHTML='<i style="background:'+FAMS[e.f].c+'"></i>'+FAMS[e.f][nk]+' <small>'+EQS.filter(q=>q.f===e.f).length+'</small>';
+      grid.appendChild(fb);}
     const d=document.createElement("div");
     d.className="eqcard"+(REDU||ordered?"":" chaos");
+    d.style.setProperty("--fc",FAMS[e.f].c);
     scatterCardVars(d);
-    d.style.transitionDelay=(i*80)+"ms";
-    d.innerHTML='<h4>'+e[nk]+'</h4><div class="zhname">'+(nk==="en"?e.sc:e.en)+'</div>'+
+    d.style.transitionDelay=((ci++)*60)+"ms";
+    d.innerHTML='<span class="p-tagx">'+e.ref+'</span>'+(e.x?'<span class="eqx">✕</span>':'')+
+      '<h4>'+e[nk]+'</h4><div class="zhname">'+(nk==="en"?e.sc:e.en)+'</div>'+
       '<div class="eqtex"></div><a class="eqref" target="_blank" rel="noopener" href="'+e.url+'">'+e.ref+'</a>';
     grid.appendChild(d);
     const box=d.querySelector(".eqtex");
@@ -1278,14 +1319,24 @@ function build(){
     if(!REDU)glyphify(d,!ordered);
   });
 }
-/* ── the kinship web ── */
+function cardEls(){return [...grid.querySelectorAll(".eqcard")];}
 function drawWeb(){
   const svg=$("eqWeb");if(!svg)return;
   const g=grid.getBoundingClientRect();
   svg.setAttribute("viewBox","0 0 "+g.width+" "+g.height);
-  const cards=[...grid.querySelectorAll(".eqcard")];
-  const ek=edgeKey();
+  const cards=cardEls(),nk=nameKey();
   let inner="";
+  // the treasure ROUTE: through each territory banner, ending at the ✕
+  const fams=[...grid.querySelectorAll(".eqfam")];
+  const xCard=cards[EQS.findIndex(e=>e.x)];
+  const pts=fams.map(f=>{const r=f.getBoundingClientRect();return[r.left-g.left+26,r.top-g.top+r.height/2];});
+  if(xCard){const r=xCard.getBoundingClientRect();pts.push([r.left-g.left+r.width-30,r.top-g.top+16]);}
+  if(pts.length>1){
+    let dpath="M"+pts[0][0]+","+pts[0][1];
+    for(let i=1;i<pts.length;i++){const[m,n2]=pts[i],[p2,q2]=pts[i-1];
+      dpath+=" Q"+((p2+m)/2+30)+","+((q2+n2)/2)+" "+m+","+n2;}
+    inner+='<path class="route" d="'+dpath+'"/>';
+  }
   EDGES.forEach(e=>{
     const A=cards[e.a],B=cards[e.b];if(!A||!B)return;
     const ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect();
@@ -1293,8 +1344,8 @@ function drawWeb(){
     const x2=rb.left-g.left+rb.width/2,y2=rb.top-g.top+rb.height/2;
     const mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1;
     const nx=-dy,ny=dx,nl=Math.hypot(nx,ny)||1;
-    const bx=mx+nx/nl*40,by=my+ny/nl*40;
-    const lbl=e[ek];
+    const bx=mx+nx/nl*44,by=my+ny/nl*44;
+    const lbl=e[nk];
     inner+='<path d="M'+x1+','+y1+' Q'+bx+','+by+' '+x2+','+y2+'"/>';
     inner+='<rect x="'+(bx-lbl.length*3.4-6)+'" y="'+(by-9)+'" width="'+(lbl.length*6.8+12)+'" height="16" rx="3"/>';
     inner+='<text x="'+bx+'" y="'+(by+3)+'" text-anchor="middle">'+lbl+'</text>';
@@ -1302,44 +1353,42 @@ function drawWeb(){
   svg.innerHTML=inner;
 }
 function webShow(on){const w=$("eqWeb");if(w)w.classList.toggle("show",on);}
-/* ── order / chaos ── */
 function settle(){
   ordered=true;
-  grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));
+  cardEls().forEach(c=>c.classList.remove("chaos"));
   grid.querySelectorAll(".gph").forEach(g2=>g2.classList.remove("chaos-g"));
   $("eqOrder").textContent=lang().chaos;
-  setTimeout(()=>{if(ordered){drawWeb();webShow(true);startLife();}},2000);
+  setTimeout(()=>{if(ordered){drawWeb();webShow(true);startLife();}},2100);
 }
 function scatter(){
   ordered=false;stopLife();webShow(false);
-  grid.querySelectorAll(".eqcard").forEach(c=>{scatterCardVars(c);c.classList.add("chaos");});
+  cardEls().forEach(c=>{scatterCardVars(c);c.classList.add("chaos");});
   grid.querySelectorAll(".gph").forEach(g2=>{
-    g2.style.setProperty("--gx",R(-260,260).toFixed(0)+"px");
-    g2.style.setProperty("--gy",R(-180,180).toFixed(0)+"px");
+    g2.style.setProperty("--gx",R(-240,240).toFixed(0)+"px");
+    g2.style.setProperty("--gy",R(-170,170).toFixed(0)+"px");
     g2.style.setProperty("--gr",R(-90,90).toFixed(0)+"deg");
     g2.classList.add("chaos-g");
   });
   $("eqOrder").textContent=lang().order;
 }
-/* ── the life loop: random formulas quietly dissolve and reassemble, forever ── */
 function lifeBeat(){
   if(!ordered||!eqVisible||document.hidden)return schedule();
-  const cards=[...grid.querySelectorAll(".eqcard")];
-  const n=Math.random()<.3?2:1;
+  const cards=cardEls();
+  const n=Math.random()<.35?2:1;
   for(let k=0;k<n;k++){
     const c=cards[Math.floor(Math.random()*cards.length)];
     c.classList.add("living");
     c.querySelectorAll(".gph").forEach(g2=>{
-      g2.style.setProperty("--gx",R(-140,140).toFixed(0)+"px");
-      g2.style.setProperty("--gy",R(-100,100).toFixed(0)+"px");
-      g2.style.setProperty("--gr",R(-60,60).toFixed(0)+"deg");
-      g2.style.transitionDelay=R(0,500).toFixed(0)+"ms";
+      g2.style.setProperty("--gx",R(-130,130).toFixed(0)+"px");
+      g2.style.setProperty("--gy",R(-90,90).toFixed(0)+"px");
+      g2.style.setProperty("--gr",R(-55,55).toFixed(0)+"deg");
+      g2.style.transitionDelay=R(0,450).toFixed(0)+"ms";
       g2.classList.add("chaos-g");
     });
     setTimeout(()=>{c.querySelectorAll(".gph").forEach(g2=>{
-      g2.style.transitionDelay=R(0,900).toFixed(0)+"ms";
+      g2.style.transitionDelay=R(0,850).toFixed(0)+"ms";
       g2.classList.remove("chaos-g");});
-      setTimeout(()=>c.classList.remove("living"),1600);},900+Math.random()*500);
+      setTimeout(()=>c.classList.remove("living"),1500);},900+Math.random()*500);
   }
   schedule();
 }
@@ -1349,18 +1398,18 @@ function stopLife(){clearTimeout(lifeTimer);}
 $("eqOrder").onclick=()=>ordered?scatter():settle();
 function applyEqLang(){const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;
   const was=ordered;build();
-  if(was){grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));
+  if(was){cardEls().forEach(c=>c.classList.remove("chaos"));
     grid.querySelectorAll(".gph").forEach(g2=>g2.classList.remove("chaos-g"));
     drawWeb();webShow(true);}
   $("eqOrder").textContent=was?t.chaos:t.order;}
 document.addEventListener("langchange",applyEqLang);
-addEventListener("resize",()=>{clearTimeout(window.__ewt);window.__ewt=setTimeout(()=>{if(ordered){drawWeb();}},300)});
+addEventListener("resize",()=>{clearTimeout(window.__ewt);window.__ewt=setTimeout(()=>{if(ordered)drawWeb();},300)});
 function boot(){
   build();
   const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;
   new IntersectionObserver(es=>{es.forEach(e=>{eqVisible=e.isIntersecting;
     if(e.isIntersecting&&!ordered&&!grid.__seen){grid.__seen=true;setTimeout(settle,900);}})},
-    {threshold:.15}).observe(grid);
+    {threshold:.1}).observe(grid);
 }
 if(document.readyState==="complete")boot();else addEventListener("load",boot);
 })();

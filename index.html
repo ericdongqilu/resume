@@ -791,9 +791,44 @@ if(!REDUCED)addEventListener("pointerdown",e=>{if(e.target.closest("a,button,inp
   (function loop(ts){requestAnimationFrame(loop);if(!run)return;uniforms.t.value=ts*.001;renderer.render(scene,cam);})(0);})();
 
 /* ---------- chart helpers ---------- */
-function cvs(id){const c=$id(id),r=Math.min(devicePixelRatio,2),w=c.clientWidth||c.parentElement.clientWidth;
-  c.width=w*r;c.height=+c.getAttribute("height")*r;const x=c.getContext("2d");x.scale(r,r);
-  return[x,w,+c.getAttribute("height")];}
+/* Chart engine v2 — sizing is decided in EXACTLY one place.
+   · every canvas gets a FIXED css height (its design height) → the page never shifts vertically
+   · backing store set only when the parent's WIDTH truly changes (≥8px) → mobile url-bar
+     scroll resizes (height-only) are ignored entirely
+   · draw functions receive cached dims and NEVER measure or resize anything */
+const __charts={};                            // id -> {w,h,r}
+function chartSize(c){
+  const id=c.id, H=+c.getAttribute("height");
+  const W=Math.round(c.parentElement.clientWidth);
+  const prev=__charts[id];
+  if(prev&&Math.abs(prev.w-W)<8)return false; // width unchanged → nothing to do
+  const r=Math.min(devicePixelRatio,2);
+  c.style.width=W+"px";c.style.height=H+"px"; // css size fixed & explicit
+  c.width=W*r;c.height=H*r;                   // backing store
+  __charts[id]={w:W,h:H,r};
+  return true;
+}
+function cvs(id){                             // draw-side: cached dims only
+  const c=$id(id),s=__charts[id]||(chartSize(c),__charts[id]);
+  const x=c.getContext("2d");
+  x.setTransform(s.r,0,0,s.r,0,0);
+  return[x,s.w,s.h];
+}
+const __chartDraw={btCanvas:()=>drawBT(),hsCanvas:()=>drawHS(),
+  hsIntra:()=>{if(hsSel)drawIntra(hsSel);},
+  fcCanvas:()=>drawFC(window.__fcP,window.__fcSE),mlCanvas:()=>drawML()};
+function watchCharts(){
+  const ro=new ResizeObserver(es=>{
+    clearTimeout(window.__crt);
+    window.__crt=setTimeout(()=>{
+      for(const e of es)
+        e.target.querySelectorAll("canvas").forEach(c=>{
+          if(chartSize(c)&&__chartDraw[c.id])try{__chartDraw[c.id]();}catch(_){}
+        });
+    },250);
+  });
+  document.querySelectorAll("#demoBT,#demoHS,#demoFC,#demoML").forEach(d=>ro.observe(d));
+}
 function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
 
 /* ---------- ① backtester ---------- */
@@ -969,7 +1004,7 @@ mapCard("hk");
     r.style.transition="stroke-dashoffset 2.6s ease";r.style.strokeDashoffset=0;}}),{threshold:.3}).observe($id("inkmap"));})();
 
 /* initial draws + redraw on resize */
-addEventListener("resize",()=>{clearTimeout(window.__rt);window.__rt=setTimeout(()=>{drawBT();drawHS();drawML();drawFC(window.__fcP,window.__fcSE);},250)});
+watchCharts();  /* width-gated ResizeObserver replaces the old resize→redraw chain */
 setMode((()=>{try{return localStorage.getItem("mode")}catch(_){return null}})()||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
 render();          /* boot: safe now — every helper and const above is initialized */
 drawBT();drawHS();drawML();drawFC(null,null);

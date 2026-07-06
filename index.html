@@ -181,6 +181,9 @@ footer .enso-f{font-family:"Zen Old Mincho",serif;font-size:30px;color:var(--zho
 </style>
 </head>
 <body>
+<script>/* anti-flash: stamp stored/preferred mode before anything paints; full setMode runs at end-of-script */
+try{document.documentElement.dataset.mode=localStorage.getItem("mode")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");}catch(_){document.documentElement.dataset.mode="light";}
+</script>
 
 <script>
 /* ══════════════ CONTENT · three languages ══════════════
@@ -636,7 +639,7 @@ const mBtn=$id("modeBtn"),htmlEl=document.documentElement;
 function setMode(m){htmlEl.dataset.mode=m;mBtn.textContent=m==="light"?"夜 · dark":"昼 · light";
   try{localStorage.setItem("mode",m)}catch(_){}
   if(window.__inkUniforms)window.__inkUniforms.uDark.value=m==="dark"?1:0;
-  drawBT();drawML();drawFC(window.__fcP,window.__fcSE);}
+  drawBT();drawHS();if(typeof hsSel!=="undefined"&&hsSel)drawIntra(hsSel);drawML();drawFC(window.__fcP,window.__fcSE);}
 mBtn.onclick=()=>setMode(htmlEl.dataset.mode==="light"?"dark":"light");
 /* boot setMode deferred to end-of-script (drawML needs const ML initialized) */
 LANG=(()=>{try{return localStorage.getItem("lang")}catch(_){return null}})()||"en";

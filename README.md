@@ -31,3 +31,4 @@ ops/deploy-a100.sh          build + run + Traefik route on the A100
 cd P-009-resume
 OWNER_PW=pw1 REVIEWER_PW=pw2 python3 private/app.py    # http://localhost:8202/showcase/resume
 ```
+

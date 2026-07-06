@@ -91,6 +91,7 @@ section{position:relative;max-width:1080px;margin:0 auto;padding:105px 8vw;z-ind
 @media(max-width:640px){.sec-note{display:none}}
 .rv{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease}
 .rv.in{opacity:1;transform:none}
+.langswap .rv{transition:none !important}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}
   #inkgl,#journeySvg{display:none}.inkdrop{display:none}}
 .skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:34px 54px}
@@ -715,7 +716,10 @@ function renderContact(){
 fetch("private.json").then(r=>r.ok?r.json():null).then(p=>{if(p){PRIV=p;renderContact();}}).catch(()=>{});
 
 /* language + mode */
-document.querySelectorAll(".lang-btn").forEach(b=>b.onclick=()=>{LANG=b.dataset.lang;try{localStorage.setItem("lang",LANG)}catch(_){}render();});
+document.querySelectorAll(".lang-btn").forEach(b=>b.onclick=()=>{LANG=b.dataset.lang;try{localStorage.setItem("lang",LANG)}catch(_){}
+  document.documentElement.classList.add("langswap");render();
+  document.dispatchEvent(new CustomEvent("langchange",{detail:LANG}));
+  setTimeout(()=>document.documentElement.classList.remove("langswap"),150);});
 const mBtn=$id("modeBtn"),htmlEl=document.documentElement;
 function setMode(m){htmlEl.dataset.mode=m;mBtn.textContent=m==="light"?"夜 · dark":"昼 · light";
   try{localStorage.setItem("mode",m)}catch(_){}
@@ -849,7 +853,9 @@ function drawHS(){
 }
 function hsTick(){if(!hsRun)return;HS.forEach(p=>{p.chg=Math.max(-8,Math.min(8,p.chg+p.vy+(rnd()*2-1)*.12));
   p.to=Math.max(.5,Math.min(23.5,p.to+p.vx+(rnd()*2-1)*.1));});drawHS();}
-if(!REDUCED)setInterval(hsTick,120);
+let hsVis=false;
+new IntersectionObserver(es=>es.forEach(e=>hsVis=e.isIntersecting),{threshold:.1}).observe($id("hsCanvas"));
+if(!REDUCED)setInterval(()=>{if(hsVis&&!document.hidden)hsTick();},600);
 $id("hsCanvas").addEventListener("click",e=>{
   const r=e.target.getBoundingClientRect(),w=r.width,h=r.height;
   const px=v=>40+(w-54)*v/24,py=v=>10+(h-50)*(1-(v+8)/16);
@@ -985,7 +991,7 @@ drawBT();drawHS();drawML();drawFC(null,null);
   <div id="inkHints" style="display:none"></div>
   <div id="inkScroll"></div>
   <div id="inkAsk" style="display:none">
-    <input id="inkQ" placeholder="中文竖读如手卷 · English lies flat" maxlength="400"/>
+    <input id="inkQ" placeholder="Ask about Eric…" maxlength="400"/>
     <button id="inkSend">呈 上</button>
   </div>
 </aside>
@@ -993,12 +999,40 @@ drawBT();drawHS();drawML();drawFC(null,null);
 (function(){
 const API="https://eric.aivmelna.com/showcase/inkchat/api/ask";
 const $=id=>document.getElementById(id);
+const I18N={
+ en:{intro:"<b>Ask about Eric — answered live by his own AI serving stack.</b><br>Leave a name and the passcode you were given. Conversations are logged for Eric.",
+     name:"your name",pass:"passcode",enter:"Enter",errName:"Name too short",errPass:"Passcode required",
+     hints:[["What has Eric actually built?"],["Why should we interview him?"],["His quant & econometrics background?"],["Eric 最擅长什么？"]],
+     greet:n=>"Welcome, "+n+". I am Eric's ink attendant — ask me anything about his work. English lies flat; 中文竖排如手卷.",
+     ph:"Ask about Eric…",send:"Send",asks:" asks",ans:"Ink attendant",wrong:"Wrong passcode",
+     path:"(The mountain path is blocked — please try again soon.)"},
+ sc:{intro:"<b>问主人之事 — 由主人自建的 AI 服务层亲答。</b><br>留下尊姓大名与口令即可入座；问答会为主人记录在案。",
+     name:"尊姓大名",pass:"口令",enter:"入 座",errName:"名字至少两个字符",errPass:"请填口令",
+     hints:[["Eric 最擅长什么？"],["他的量化与计量背景？"],["他做过什么水墨作品？"],["What has Eric built?"]],
+     greet:n=>n+"阁下安好 — 在下墨僮，代主人卢东奇答问。中文竖排如手卷，英文平铺如笺。请指教。",
+     ph:"问主人之事…",send:"呈 上",asks:" 问",ans:"墨僮 答",wrong:"口令不对",
+     path:"（山径不通，稍后再来。）"},
+ tc:{intro:"<b>問主人之事 — 由主人自建的 AI 服務層親答。</b><br>留下尊姓大名與口令即可入座；問答會為主人記錄在案。",
+     name:"尊姓大名",pass:"口令",enter:"入 座",errName:"名字至少兩個字符",errPass:"請填口令",
+     hints:[["Eric 最擅長什麼？"],["他的量化與計量背景？"],["他做過什麼水墨作品？"],["What has Eric built?"]],
+     greet:n=>n+"閣下安好 — 在下墨僮，代主人盧東奇答問。中文豎排如手卷，英文平鋪如箋。請指教。",
+     ph:"問主人之事…",send:"呈 上",asks:" 問",ans:"墨僮 答",wrong:"口令不對",
+     path:"（山徑不通，稍後再來。）"}};
+let T9=I18N[(localStorage.getItem("lang")||"en")]||I18N.en;
+function applyLang(){
+  T9=I18N[(localStorage.getItem("lang")||"en")]||I18N.en;
+  document.querySelector("#inkDrawer .hd p").innerHTML=T9.intro;
+  $("inkName").placeholder=T9.name;$("inkPass").placeholder=T9.pass;$("inkEnter").textContent=T9.enter;
+  $("inkQ").placeholder=T9.ph;$("inkSend").textContent=T9.send;
+  if($("inkHints").style.display!=="none")hints();
+}
+document.addEventListener("langchange",applyLang);
 const dr=$("inkDrawer");
 $("inkTab").onclick=()=>dr.classList.add("open");
 $("inkClose").onclick=()=>dr.classList.remove("open");
 const esc=t=>t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const isZh=t=>{let c=0;for(const ch of t)if(ch>="\u4e00"&&ch<="\u9fff")c++;return c>=Math.max(2,t.length*.2);};
-const HINTS=[["Eric 最擅长什么？","zh"],["What has Eric actually built?","en"],["他的量化与计量背景？","zh"],["Why should we interview him?","en"]];
+
 let cred=null;
 try{cred=JSON.parse(localStorage.getItem("inkchat_cred")||"null");}catch(_){}
 
@@ -1018,21 +1052,24 @@ function settle(d,text){                       // swap text without re-parsing =
 function hints(){
   const h=$("inkHints");h.style.display="flex";
   h.innerHTML="";
-  HINTS.forEach(([t])=>{const b=document.createElement("button");b.textContent=t;
+  T9.hints.forEach(([t])=>{const b=document.createElement("button");b.textContent=t;
     b.onclick=()=>{$("inkQ").value=t;send();};h.appendChild(b);});
 }
 function enter(){
   $("inkGate").style.display="none";$("inkAsk").style.display="flex";
   hints();
-  if(!$("inkScroll").children.length)
-    leaf("a", "zh", "墨僮", (cred.name)+"阁下安好 — 在下墨僮，代主人卢东奇答问。中文竖排如手卷，英文平铺如笺。请指教。");
+  applyLang();
+  if(!$("inkScroll").children.length){
+    const gl=(localStorage.getItem("lang")||"en")==="en"?"en":"zh";
+    leaf("a", gl, T9.ans, T9.greet(cred.name));
+  }
   $("inkQ").focus();
 }
 if(cred&&cred.name){$("inkName").value=cred.name;$("inkPass").value=cred.pass||"";enter();}
 $("inkEnter").onclick=()=>{
   const n=$("inkName").value.trim(),p=$("inkPass").value.trim();
-  if(n.length<2){$("inkGateErr").textContent="名字至少两个字符 · name too short";return;}
-  if(!p){$("inkGateErr").textContent="请填口令 · passcode required";return;}
+  if(n.length<2){$("inkGateErr").textContent=T9.errName;return;}
+  if(!p){$("inkGateErr").textContent=T9.errPass;return;}
   cred={name:n,pass:p};
   try{localStorage.setItem("inkchat_cred",JSON.stringify(cred));}catch(_){}
   enter();
@@ -1043,23 +1080,23 @@ async function send(){
   if(!q||!cred||busy)return;
   busy=true;$("inkSend").disabled=true;$("inkQ").value="";
   const ql=isZh(q)?"zh":"en";
-  leaf("q",ql,esc(cred.name)+(ql==="zh"?" 问":" asks"),q);
-  const wait=leaf("a",ql,ql==="zh"?"墨僮 答":"Ink attendant","",true);
+  leaf("q",ql,esc(cred.name)+T9.asks,q);
+  const wait=leaf("a",ql,T9.ans,"",true);
   $("inkScroll").scrollLeft=0;
   try{
     const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({name:cred.name,passcode:cred.pass,question:q})});
     const d=await r.json();
     if(!r.ok){
-      settle(wait,d.err||(ql==="zh"?"礼数未合，请重递名帖。":"Something went wrong — please re-enter."));
+      settle(wait,d.err||T9.wrong);
       if(r.status===403){localStorage.removeItem("inkchat_cred");cred=null;
         $("inkGate").style.display="flex";$("inkAsk").style.display="none";
-        $("inkGateErr").textContent="口令不对 · wrong passcode";}
+        $("inkGateErr").textContent=T9.wrong;}
     }else{
       if(d.lang&&d.lang!==ql){wait.classList.remove(ql);wait.classList.add(d.lang);}
       settle(wait,d.answer||"…");
     }
-  }catch(e){settle(wait,ql==="zh"?"（山径不通，稍后再来。）":"(The mountain path is blocked — please try again soon.)");}
+  }catch(e){settle(wait,T9.path);}
   busy=false;$("inkSend").disabled=false;
 }
 $("inkSend").onclick=send;

@@ -246,6 +246,17 @@ html[data-mode="dark"] #inkTab{background:#171512}
 
 /* ── 式 · the equation scroll: chaos that settles into order ── */
 #eq .eqgrid{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
+#eqWeb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;opacity:0;transition:opacity 1.2s ease}
+#eqWeb.show{opacity:1}
+#eqWeb path{fill:none;stroke:#b43a2b;stroke-width:1.6;stroke-dasharray:1 7;stroke-linecap:round;opacity:.55;
+  animation:eqMarch 26s linear infinite}
+@keyframes eqMarch{to{stroke-dashoffset:-400}}
+#eqWeb text{font:600 10px ui-monospace,monospace;fill:#8d5b52;letter-spacing:.04em}
+#eqWeb rect{fill:var(--card,#faf8f2);opacity:.92}
+html[data-mode="dark"] #eqWeb rect{fill:#1c1915}
+html[data-mode="dark"] #eqWeb text{fill:#c98b7f}
+.eqcard{position:relative;z-index:2}
+.eqcard.living{z-index:6}
 .eqcard{background:var(--card,#faf8f2);border:1px solid #e3ded2;border-radius:3px;padding:16px 18px;
   transition:transform 1.15s cubic-bezier(.22,.9,.24,1),opacity 1.15s ease,filter 1.15s ease;will-change:transform}
 .eqcard.chaos{transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(var(--cs,.9));opacity:.75;filter:blur(.7px);z-index:1}
@@ -1211,82 +1222,145 @@ const EQS=[
  {en:"Corrected Akaike criterion",sc:"修正赤池信息准则",tc:"修正赤池資訊準則",
   tex:"\\text{AICc}=\\text{AIC}+\\frac{2(p+q+k+1)(p+q+k+2)}{T-p-q-k-2}",
   ref:"FPP3 §9.6",url:"https://otexts.com/fpp3/arima-estimation.html"}];
-const T={en:{title:"THE EQUATIONS I THINK IN",note:"from Hyndman & Athanasopoulos, FPP3 — every symbol flies home; every formula cited",order:"整 · order",chaos:"乱 · scatter"},
- sc:{title:"式 — 我用来思考的方程",note:"出自《FPP3》— 每个符号各自归位，每条公式皆可溯源",order:"整",chaos:"乱"},
- tc:{title:"式 — 我用來思考的方程",note:"出自《FPP3》— 每個符號各自歸位，每條公式皆可溯源",order:"整",chaos:"亂"}};
+/* the relationships — why these formulas belong to ONE craft */
+const EDGES=[
+ {a:6,b:7,en:"r_k feeds Q*",sc:"r_k 入 Q*",tc:"r_k 入 Q*"},
+ {a:3,b:2,en:"+ trend + season",sc:"加趋势与季节",tc:"加趨勢與季節"},
+ {a:0,b:1,en:"× seasonal factors",sc:"乘季节因子",tc:"乘季節因子"},
+ {a:0,b:10,en:"chooses p, q",sc:"以此定阶",tc:"以此定階"},
+ {a:5,b:9,en:"scales the error",sc:"充当误差基准",tc:"充當誤差基準"},
+ {a:4,b:8,en:"± band around it",sc:"套上预测区间",tc:"套上預測區間"},
+ {a:7,b:0,en:"validates residuals",sc:"验其残差",tc:"驗其殘差"}];
+const T={en:{title:"THE EQUATIONS I THINK IN",note:"FPP3, cited — watch the symbols fly home, then the web of kinship appear",order:"整 · order",chaos:"乱 · scatter"},
+ sc:{title:"式 — 我用来思考的方程",note:"《FPP3》逐条可溯源 — 符号归位后，亲缘之网自现",order:"整",chaos:"乱"},
+ tc:{title:"式 — 我用來思考的方程",note:"《FPP3》逐條可溯源 — 符號歸位後，親緣之網自現",order:"整",chaos:"亂"}};
 const $=id=>document.getElementById(id);
 const grid=$("eqGrid");
 const REDU=matchMedia("(prefers-reduced-motion: reduce)").matches;
-let ordered=false;
 const R=(a,b)=>a+Math.random()*(b-a);
+let ordered=false,lifeTimer=null,eqVisible=false;
 function lang(){try{return T[localStorage.getItem("lang")]||T.en;}catch(_){return T.en;}}
 function nameKey(){try{const l=localStorage.getItem("lang");return l==="sc"||l==="tc"?l:"en";}catch(_){return "en";}}
+function edgeKey(){return nameKey();}
 
-function glyphify(card){                      // every rendered symbol becomes its own wanderer
+function glyphify(card,scattered){
   card.querySelectorAll(".katex *").forEach(el=>{
     if(el.childElementCount===0&&el.textContent.trim()){
-      el.classList.add("gph","chaos-g");
-      el.style.setProperty("--gx",R(-160,160).toFixed(0)+"px");
-      el.style.setProperty("--gy",R(-120,120).toFixed(0)+"px");
-      el.style.setProperty("--gr",R(-70,70).toFixed(0)+"deg");
-      el.style.setProperty("--gs",R(.4,1.7).toFixed(2));
-      el.style.transitionDelay=R(80,1500).toFixed(0)+"ms";
+      el.classList.add("gph");if(scattered)el.classList.add("chaos-g");
+      el.style.setProperty("--gx",R(-260,260).toFixed(0)+"px");
+      el.style.setProperty("--gy",R(-180,180).toFixed(0)+"px");
+      el.style.setProperty("--gr",R(-90,90).toFixed(0)+"deg");
+      el.style.setProperty("--gs",R(.3,2).toFixed(2));
+      el.style.transitionDelay=R(60,1600).toFixed(0)+"ms";
     }
   });
 }
+function scatterCardVars(d){
+  d.style.setProperty("--cx",R(-110,110).toFixed(0)+"%");
+  d.style.setProperty("--cy",R(-90,90).toFixed(0)+"%");
+  d.style.setProperty("--cr",R(-50,50).toFixed(0)+"deg");
+  d.style.setProperty("--cs",R(.65,1.12).toFixed(2));
+}
 function build(){
-  grid.innerHTML="";
+  grid.innerHTML='<svg id="eqWeb" aria-hidden="true"></svg>';
   const nk=nameKey();
   EQS.forEach((e,i)=>{
     const d=document.createElement("div");
     d.className="eqcard"+(REDU||ordered?"":" chaos");
-    d.style.setProperty("--cx",R(-70,70).toFixed(0)+"%");
-    d.style.setProperty("--cy",R(-60,60).toFixed(0)+"%");
-    d.style.setProperty("--cr",R(-32,32).toFixed(0)+"deg");
-    d.style.setProperty("--cs",R(.78,1.06).toFixed(2));
-    d.style.transitionDelay=(i*90)+"ms";
+    scatterCardVars(d);
+    d.style.transitionDelay=(i*80)+"ms";
     d.innerHTML='<h4>'+e[nk]+'</h4><div class="zhname">'+(nk==="en"?e.sc:e.en)+'</div>'+
       '<div class="eqtex"></div><a class="eqref" target="_blank" rel="noopener" href="'+e.url+'">'+e.ref+'</a>';
     grid.appendChild(d);
     const box=d.querySelector(".eqtex");
     if(window.katex){try{katex.render(e.tex,box,{displayMode:true,throwOnError:false});}catch(_){box.textContent=e.tex;}}
     else box.innerHTML='<code style="font-size:12px">'+e.tex+'</code>';
-    if(!REDU&&!ordered)glyphify(d);
+    if(!REDU)glyphify(d,!ordered);
   });
 }
+/* ── the kinship web ── */
+function drawWeb(){
+  const svg=$("eqWeb");if(!svg)return;
+  const g=grid.getBoundingClientRect();
+  svg.setAttribute("viewBox","0 0 "+g.width+" "+g.height);
+  const cards=[...grid.querySelectorAll(".eqcard")];
+  const ek=edgeKey();
+  let inner="";
+  EDGES.forEach(e=>{
+    const A=cards[e.a],B=cards[e.b];if(!A||!B)return;
+    const ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect();
+    const x1=ra.left-g.left+ra.width/2,y1=ra.top-g.top+ra.height/2;
+    const x2=rb.left-g.left+rb.width/2,y2=rb.top-g.top+rb.height/2;
+    const mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1;
+    const nx=-dy,ny=dx,nl=Math.hypot(nx,ny)||1;
+    const bx=mx+nx/nl*40,by=my+ny/nl*40;
+    const lbl=e[ek];
+    inner+='<path d="M'+x1+','+y1+' Q'+bx+','+by+' '+x2+','+y2+'"/>';
+    inner+='<rect x="'+(bx-lbl.length*3.4-6)+'" y="'+(by-9)+'" width="'+(lbl.length*6.8+12)+'" height="16" rx="3"/>';
+    inner+='<text x="'+bx+'" y="'+(by+3)+'" text-anchor="middle">'+lbl+'</text>';
+  });
+  svg.innerHTML=inner;
+}
+function webShow(on){const w=$("eqWeb");if(w)w.classList.toggle("show",on);}
+/* ── order / chaos ── */
 function settle(){
   ordered=true;
   grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));
-  grid.querySelectorAll(".gph").forEach(g=>g.classList.remove("chaos-g"));
+  grid.querySelectorAll(".gph").forEach(g2=>g2.classList.remove("chaos-g"));
   $("eqOrder").textContent=lang().chaos;
+  setTimeout(()=>{if(ordered){drawWeb();webShow(true);startLife();}},2000);
 }
 function scatter(){
-  ordered=false;
-  grid.querySelectorAll(".eqcard").forEach(c=>{
-    c.style.setProperty("--cx",R(-70,70).toFixed(0)+"%");
-    c.style.setProperty("--cy",R(-60,60).toFixed(0)+"%");
-    c.style.setProperty("--cr",R(-32,32).toFixed(0)+"deg");
-    c.classList.add("chaos");
-  });
-  grid.querySelectorAll(".gph").forEach(g=>{
-    g.style.setProperty("--gx",R(-160,160).toFixed(0)+"px");
-    g.style.setProperty("--gy",R(-120,120).toFixed(0)+"px");
-    g.style.setProperty("--gr",R(-70,70).toFixed(0)+"deg");
-    g.classList.add("chaos-g");
+  ordered=false;stopLife();webShow(false);
+  grid.querySelectorAll(".eqcard").forEach(c=>{scatterCardVars(c);c.classList.add("chaos");});
+  grid.querySelectorAll(".gph").forEach(g2=>{
+    g2.style.setProperty("--gx",R(-260,260).toFixed(0)+"px");
+    g2.style.setProperty("--gy",R(-180,180).toFixed(0)+"px");
+    g2.style.setProperty("--gr",R(-90,90).toFixed(0)+"deg");
+    g2.classList.add("chaos-g");
   });
   $("eqOrder").textContent=lang().order;
 }
+/* ── the life loop: random formulas quietly dissolve and reassemble, forever ── */
+function lifeBeat(){
+  if(!ordered||!eqVisible||document.hidden)return schedule();
+  const cards=[...grid.querySelectorAll(".eqcard")];
+  const n=Math.random()<.3?2:1;
+  for(let k=0;k<n;k++){
+    const c=cards[Math.floor(Math.random()*cards.length)];
+    c.classList.add("living");
+    c.querySelectorAll(".gph").forEach(g2=>{
+      g2.style.setProperty("--gx",R(-140,140).toFixed(0)+"px");
+      g2.style.setProperty("--gy",R(-100,100).toFixed(0)+"px");
+      g2.style.setProperty("--gr",R(-60,60).toFixed(0)+"deg");
+      g2.style.transitionDelay=R(0,500).toFixed(0)+"ms";
+      g2.classList.add("chaos-g");
+    });
+    setTimeout(()=>{c.querySelectorAll(".gph").forEach(g2=>{
+      g2.style.transitionDelay=R(0,900).toFixed(0)+"ms";
+      g2.classList.remove("chaos-g");});
+      setTimeout(()=>c.classList.remove("living"),1600);},900+Math.random()*500);
+  }
+  schedule();
+}
+function schedule(){clearTimeout(lifeTimer);lifeTimer=setTimeout(lifeBeat,5000+Math.random()*6000);}
+function startLife(){if(!REDU)schedule();}
+function stopLife(){clearTimeout(lifeTimer);}
 $("eqOrder").onclick=()=>ordered?scatter():settle();
 function applyEqLang(){const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;
   const was=ordered;build();
   if(was){grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));
-    grid.querySelectorAll(".gph").forEach(g=>g.classList.remove("chaos-g"));}
+    grid.querySelectorAll(".gph").forEach(g2=>g2.classList.remove("chaos-g"));
+    drawWeb();webShow(true);}
   $("eqOrder").textContent=was?t.chaos:t.order;}
 document.addEventListener("langchange",applyEqLang);
+addEventListener("resize",()=>{clearTimeout(window.__ewt);window.__ewt=setTimeout(()=>{if(ordered){drawWeb();}},300)});
 function boot(){
   build();
   const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;
-  new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(settle,1000);o.disconnect();}})},{threshold:.2}).observe(grid);
+  new IntersectionObserver(es=>{es.forEach(e=>{eqVisible=e.isIntersecting;
+    if(e.isIntersecting&&!ordered&&!grid.__seen){grid.__seen=true;setTimeout(settle,900);}})},
+    {threshold:.15}).observe(grid);
 }
 if(document.readyState==="complete")boot();else addEventListener("load",boot);
 })();

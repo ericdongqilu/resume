@@ -178,6 +178,23 @@ section{position:relative;max-width:1080px;margin:0 auto;padding:105px 8vw;z-ind
 .gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border:0;margin:60px auto 0;max-width:420px}
 footer{padding:60px 8vw 80px;text-align:center;color:var(--dan);font-size:12.5px;position:relative;z-index:2}
 footer .enso-f{font-family:"Zen Old Mincho",serif;font-size:30px;color:var(--zhong);display:block;margin-bottom:10px}
+
+/* ── 印 · print / save-as-PDF: quiet paper, no theatre ── */
+@media print{
+  :root{--paper:#fff}
+  html{background:#fff}
+  body{background:#fff !important;color:#1c1a17 !important}
+  #inkgl,#journeySvg,.rail,.top-ctl,.mode-btn,.lang-btn,.btn-ink,.btn-ghost,.pads,
+  .mountains,#demos,.demo,.demos,[id^="btC"],[id^="hs"],[id^="fc"],[id^="ml"],canvas{display:none !important}
+  .hero{min-height:auto !important;padding:24px 0 8px !important}
+  .rv{opacity:1 !important;transform:none !important;transition:none !important}
+  section{padding:10px 0 !important;page-break-inside:avoid}
+  .card,.t-item,.skill,.edu-item{page-break-inside:avoid}
+  .skills{grid-template-columns:1fr 1fr !important;gap:10px !important}
+  a{color:#1c1a17 !important;text-decoration:none}
+  #contact a::after{content:" (" attr(href) ")";font-size:.8em;color:#57514a}
+  .enso,.seal{filter:none}
+}
 </style>
 </head>
 <body>
@@ -218,7 +235,8 @@ en: {
       "Run a 100+ container AI platform on dual-A100s: model serving, multi-agent products, login-gated GenAI showcases behind one gateway.",
       "Shipped Factory OS — a multi-user LLM pipeline (clean → summarize → task-ify) with per-user isolation, a 26-check self-test gate and a self-improving QA loop.",
       "Built a real-time quant research stack: 15.5k-symbol live feed → Dagster → TimescaleDB → agent paper-trading desk.",
-      "Grew an agent-run ink-wash game estate — local LLMs advise, fight alongside the player and design levels, all whitelist-validated; performance loops rewritten in Rust (45–58×, checksums asserted equal)."]},
+      "Grew an agent-run ink-wash game estate — local LLMs advise, fight alongside the player and design levels, all whitelist-validated; performance loops rewritten in Rust (45–58×, checksums asserted equal).",
+      "Own the model-serving layer end to end: dual-A100 placement pinned by GPU UUID, gemma-31B serving its full 256K context, one lifecycle CLI for the whole model estate — plus a GitHub-hook pipeline where the local model drafts trilingual CV updates for human approval."]},
     {when:"2019 — 2023",role:"Application Developer · Data Analyst",org:"Crystal Jade Group · Melbourne",bullets:[  // FILL-ME dates
       "Built internal applications and the group's data-analysis layer.",
       "Owned reporting pipelines end-to-end — raw operational data to decision-ready analysis."]},
@@ -290,7 +308,8 @@ sc: {
       "在双A100上运营100+容器的AI平台：模型推理、多智能体产品、统一网关下的登录制演示。",
       "交付 Factory OS——多用户大模型流水线（清洗→摘要→任务化），用户隔离、26项自检关卡、自我改进的QA闭环。",
       "搭建实时量化研究栈：1.55万标的实时行情 → Dagster → TimescaleDB → 智能体模拟盘。",
-      "培育由受核验智能体运转的水墨游戏庄园——本地大模型献策、并肩作战、设计关卡，全部白名单严校；性能热点以 Rust 重写（45–58 倍，校验相等）。"]},
+      "培育由受核验智能体运转的水墨游戏庄园——本地大模型献策、并肩作战、设计关卡，全部白名单严校；性能热点以 Rust 重写（45–58 倍，校验相等）。",
+      "端到端掌管模型服务层：双A100按GPU UUID精准布卡，gemma-31B以完整256K上下文常驻服务，一套生命周期CLI管起落；另建GitHub钩子流水线——本地大模型起草三语简历更新，人工批准落笔。"]},
     {when:"2019 — 2023",role:"应用开发 · 数据分析师",org:"翡翠集团 · 墨尔本",bullets:[
       "负责集团内部应用与数据分析层的搭建。",
       "端到端负责报表管道——从原始运营数据到可决策的分析。"]},
@@ -362,7 +381,8 @@ tc: {
       "在雙A100上營運100+容器的AI平台：模型推理、多智能體產品、統一閘道下的登入制演示。",
       "交付 Factory OS——多用戶大模型流水線（清洗→摘要→任務化），用戶隔離、26項自檢關卡、自我改進的QA閉環。",
       "搭建即時量化研究棧：1.55萬標的即時行情 → Dagster → TimescaleDB → 智能體模擬盤。",
-      "培育由受核驗智能體運轉的水墨遊戲莊園——本地大模型獻策、並肩作戰、設計關卡，全部白名單嚴校；性能熱點以 Rust 重寫（45–58 倍，校驗相等）。"]},
+      "培育由受核驗智能體運轉的水墨遊戲莊園——本地大模型獻策、並肩作戰、設計關卡，全部白名單嚴校；性能熱點以 Rust 重寫（45–58 倍，校驗相等）。",
+      "端到端掌管模型服務層：雙A100按GPU UUID精準布卡，gemma-31B以完整256K上下文常駐服務，一套生命週期CLI管起落；另建GitHub鉤子流水線——本地大模型起草三語簡歷更新，人工批准落筆。"]},
     {when:"2019 — 2023",role:"應用開發 · 數據分析師",org:"翡翠集團 · 墨爾本",bullets:[
       "負責集團內部應用與數據分析層的搭建。",
       "端到端負責報表管線——從原始營運數據到可決策的分析。"]},

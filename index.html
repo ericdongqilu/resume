@@ -248,7 +248,9 @@ html[data-mode="dark"] #inkTab{background:#171512}
 #eq .eqgrid{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
 .eqcard{background:var(--card,#faf8f2);border:1px solid #e3ded2;border-radius:3px;padding:16px 18px;
   transition:transform 1.15s cubic-bezier(.22,.9,.24,1),opacity 1.15s ease,filter 1.15s ease;will-change:transform}
-.eqcard.chaos{transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(.94);opacity:.82;filter:blur(.6px);z-index:1}
+.eqcard.chaos{transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(var(--cs,.9));opacity:.75;filter:blur(.7px);z-index:1}
+.gph{display:inline-block;transition:transform 1s cubic-bezier(.2,.85,.25,1),opacity 1s ease}
+.gph.chaos-g{transform:translate(var(--gx),var(--gy)) rotate(var(--gr)) scale(var(--gs,1));opacity:0}
 .eqcard h4{margin:0 0 4px;font:700 14px/1.6 "Zen Old Mincho","Noto Serif SC",serif;letter-spacing:.1em}
 .eqcard .zhname{color:#57514a;font-size:11.5px;letter-spacing:.14em;margin-bottom:10px}
 .eqtex{overflow-x:auto;overflow-y:hidden;padding:6px 0;font-size:15px;min-height:44px}
@@ -1179,63 +1181,114 @@ const EQS=[
  {en:"ARIMA(p, d, q) — backshift form",sc:"差分自回归移动平均 · 后移算子式",tc:"差分自迴歸移動平均 · 後移算子式",
   tex:"(1-\\phi_1 B-\\cdots-\\phi_p B^p)\\,(1-B)^d y_t = c+(1+\\theta_1 B+\\cdots+\\theta_q B^q)\\,\\varepsilon_t",
   ref:"FPP3 §9.5 · eq (9.2)",url:"https://otexts.com/fpp3/non-seasonal-arima.html"},
+ {en:"Seasonal ARIMA(1,1,1)(1,1,1)₄",sc:"季节性 ARIMA · 乘法结构",tc:"季節性 ARIMA · 乘法結構",
+  tex:"(1-\\phi_1 B)(1-\\Phi_1 B^4)(1-B)(1-B^4)\\,y_t=(1+\\theta_1 B)(1+\\Theta_1 B^4)\\,\\varepsilon_t",
+  ref:"FPP3 §9.9",url:"https://otexts.com/fpp3/seasonal-arima.html"},
  {en:"Holt-Winters additive",sc:"霍尔特-温特斯 加法季节",tc:"霍爾特-溫特斯 加法季節",
   tex:"\\begin{aligned}\\hat y_{t+h|t}&=\\ell_t+hb_t+s_{t+h-m(k+1)}\\\\ \\ell_t&=\\alpha(y_t-s_{t-m})+(1-\\alpha)(\\ell_{t-1}+b_{t-1})\\\\ b_t&=\\beta^*(\\ell_t-\\ell_{t-1})+(1-\\beta^*)b_{t-1}\\\\ s_t&=\\gamma(y_t-\\ell_{t-1}-b_{t-1})+(1-\\gamma)s_{t-m}\\end{aligned}",
   ref:"FPP3 §8.3",url:"https://otexts.com/fpp3/holt-winters.html"},
  {en:"Simple exponential smoothing",sc:"简单指数平滑 · 加权平均式",tc:"簡單指數平滑 · 加權平均式",
   tex:"\\hat y_{T+1|T}=\\alpha y_T+(1-\\alpha)\\,\\hat y_{T|T-1},\\qquad 0\\le\\alpha\\le 1",
   ref:"FPP3 §8.1",url:"https://otexts.com/fpp3/ses.html"},
+ {en:"Drift method",sc:"漂移法",tc:"漂移法",
+  tex:"\\hat y_{T+h|T}=y_T+\\frac{h}{T-1}\\sum_{t=2}^{T}(y_t-y_{t-1})=y_T+h\\Big(\\frac{y_T-y_1}{T-1}\\Big)",
+  ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
+ {en:"Seasonal naïve",sc:"季节朴素法",tc:"季節樸素法",
+  tex:"\\hat y_{T+h|T}=y_{T+h-m(k+1)}",
+  ref:"FPP3 §5.2",url:"https://otexts.com/fpp3/simple-methods.html"},
  {en:"Autocorrelation coefficient",sc:"自相关系数",tc:"自相關係數",
   tex:"r_k=\\frac{\\sum_{t=k+1}^{T}(y_t-\\bar y)(y_{t-k}-\\bar y)}{\\sum_{t=1}^{T}(y_t-\\bar y)^2}",
   ref:"FPP3 §2.8",url:"https://otexts.com/fpp3/acf.html"},
  {en:"Ljung-Box portmanteau test",sc:"Ljung-Box 混成检验",tc:"Ljung-Box 混成檢驗",
   tex:"Q^{*}=T(T+2)\\sum_{k=1}^{\\ell}(T-k)^{-1}\\,r_k^{2}",
   ref:"FPP3 §5.4",url:"https://otexts.com/fpp3/diagnostics.html"},
+ {en:"Prediction interval",sc:"预测区间",tc:"預測區間",
+  tex:"\\hat y_{T+h|T}\;\\pm\;c\\,\\hat\\sigma_h",
+  ref:"FPP3 §5.5",url:"https://otexts.com/fpp3/prediction-intervals.html"},
+ {en:"Mean absolute scaled error",sc:"平均绝对比例误差",tc:"平均絕對比例誤差",
+  tex:"q_j=\\frac{e_j}{\\dfrac{1}{T-m}\\sum_{t=m+1}^{T}|y_t-y_{t-m}|},\\qquad \\text{MASE}=\\text{mean}(|q_j|)",
+  ref:"FPP3 §5.8",url:"https://otexts.com/fpp3/accuracy.html"},
  {en:"Corrected Akaike criterion",sc:"修正赤池信息准则",tc:"修正赤池資訊準則",
   tex:"\\text{AICc}=\\text{AIC}+\\frac{2(p+q+k+1)(p+q+k+2)}{T-p-q-k-2}",
   ref:"FPP3 §9.6",url:"https://otexts.com/fpp3/arima-estimation.html"}];
-const T={en:{title:"THE EQUATIONS I THINK IN",note:"from Hyndman & Athanasopoulos, FPP3 — each one cited",order:"整 · order",chaos:"乱 · scatter"},
- sc:{title:"式 — 我用来思考的方程",note:"出自 Hyndman & Athanasopoulos《FPP3》— 逐条可溯源",order:"整",chaos:"乱"},
- tc:{title:"式 — 我用來思考的方程",note:"出自 Hyndman & Athanasopoulos《FPP3》— 逐條可溯源",order:"整",chaos:"亂"}};
+const T={en:{title:"THE EQUATIONS I THINK IN",note:"from Hyndman & Athanasopoulos, FPP3 — every symbol flies home; every formula cited",order:"整 · order",chaos:"乱 · scatter"},
+ sc:{title:"式 — 我用来思考的方程",note:"出自《FPP3》— 每个符号各自归位，每条公式皆可溯源",order:"整",chaos:"乱"},
+ tc:{title:"式 — 我用來思考的方程",note:"出自《FPP3》— 每個符號各自歸位，每條公式皆可溯源",order:"整",chaos:"亂"}};
 const $=id=>document.getElementById(id);
 const grid=$("eqGrid");
 const REDU=matchMedia("(prefers-reduced-motion: reduce)").matches;
 let ordered=false;
+const R=(a,b)=>a+Math.random()*(b-a);
 function lang(){try{return T[localStorage.getItem("lang")]||T.en;}catch(_){return T.en;}}
-function nameKey(){try{return localStorage.getItem("lang")==="sc"?"sc":(localStorage.getItem("lang")==="tc"?"tc":"en");}catch(_){return "en";}}
+function nameKey(){try{const l=localStorage.getItem("lang");return l==="sc"||l==="tc"?l:"en";}catch(_){return "en";}}
+
+function glyphify(card){                      // every rendered symbol becomes its own wanderer
+  card.querySelectorAll(".katex *").forEach(el=>{
+    if(el.childElementCount===0&&el.textContent.trim()){
+      el.classList.add("gph","chaos-g");
+      el.style.setProperty("--gx",R(-160,160).toFixed(0)+"px");
+      el.style.setProperty("--gy",R(-120,120).toFixed(0)+"px");
+      el.style.setProperty("--gr",R(-70,70).toFixed(0)+"deg");
+      el.style.setProperty("--gs",R(.4,1.7).toFixed(2));
+      el.style.transitionDelay=R(80,1500).toFixed(0)+"ms";
+    }
+  });
+}
 function build(){
   grid.innerHTML="";
   const nk=nameKey();
   EQS.forEach((e,i)=>{
     const d=document.createElement("div");
     d.className="eqcard"+(REDU||ordered?"":" chaos");
-    d.style.setProperty("--cx",(Math.sin(i*2.7)*38|0)+"%");
-    d.style.setProperty("--cy",(Math.cos(i*1.9)*46|0)+"%");
-    d.style.setProperty("--cr",((i*67)%29-14)+"deg");
-    d.style.transitionDelay=(i*110)+"ms";
-    d.innerHTML='<h4>'+e[nk==="en"?"en":nk]+'</h4><div class="zhname">'+(nk==="en"?e.sc:e.en)+'</div>'+
+    d.style.setProperty("--cx",R(-70,70).toFixed(0)+"%");
+    d.style.setProperty("--cy",R(-60,60).toFixed(0)+"%");
+    d.style.setProperty("--cr",R(-32,32).toFixed(0)+"deg");
+    d.style.setProperty("--cs",R(.78,1.06).toFixed(2));
+    d.style.transitionDelay=(i*90)+"ms";
+    d.innerHTML='<h4>'+e[nk]+'</h4><div class="zhname">'+(nk==="en"?e.sc:e.en)+'</div>'+
       '<div class="eqtex"></div><a class="eqref" target="_blank" rel="noopener" href="'+e.url+'">'+e.ref+'</a>';
     grid.appendChild(d);
     const box=d.querySelector(".eqtex");
-    if(window.katex){try{katex.render(e.tex,box,{displayMode:true,throwOnError:false});}
-      catch(_){box.textContent=e.tex;}}
+    if(window.katex){try{katex.render(e.tex,box,{displayMode:true,throwOnError:false});}catch(_){box.textContent=e.tex;}}
     else box.innerHTML='<code style="font-size:12px">'+e.tex+'</code>';
+    if(!REDU&&!ordered)glyphify(d);
   });
 }
-function settle(){ordered=true;grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));$("eqOrder").textContent=lang().chaos;}
-function scatter(){ordered=false;grid.querySelectorAll(".eqcard").forEach(c=>c.classList.add("chaos"));$("eqOrder").textContent=lang().order;}
+function settle(){
+  ordered=true;
+  grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));
+  grid.querySelectorAll(".gph").forEach(g=>g.classList.remove("chaos-g"));
+  $("eqOrder").textContent=lang().chaos;
+}
+function scatter(){
+  ordered=false;
+  grid.querySelectorAll(".eqcard").forEach(c=>{
+    c.style.setProperty("--cx",R(-70,70).toFixed(0)+"%");
+    c.style.setProperty("--cy",R(-60,60).toFixed(0)+"%");
+    c.style.setProperty("--cr",R(-32,32).toFixed(0)+"deg");
+    c.classList.add("chaos");
+  });
+  grid.querySelectorAll(".gph").forEach(g=>{
+    g.style.setProperty("--gx",R(-160,160).toFixed(0)+"px");
+    g.style.setProperty("--gy",R(-120,120).toFixed(0)+"px");
+    g.style.setProperty("--gr",R(-70,70).toFixed(0)+"deg");
+    g.classList.add("chaos-g");
+  });
+  $("eqOrder").textContent=lang().order;
+}
 $("eqOrder").onclick=()=>ordered?scatter():settle();
 function applyEqLang(){const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;
-  $("eqOrder").textContent=ordered?t.chaos:t.order;build();if(ordered)grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));}
+  const was=ordered;build();
+  if(was){grid.querySelectorAll(".eqcard").forEach(c=>c.classList.remove("chaos"));
+    grid.querySelectorAll(".gph").forEach(g=>g.classList.remove("chaos-g"));}
+  $("eqOrder").textContent=was?t.chaos:t.order;}
 document.addEventListener("langchange",applyEqLang);
 function boot(){
   build();
-  new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(settle,1100);o.disconnect();}})},{threshold:.25}).observe(grid);
-  applyEqLangTitleOnly();
+  const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;
+  new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(settle,1000);o.disconnect();}})},{threshold:.2}).observe(grid);
 }
-function applyEqLangTitleOnly(){const t=lang();$("eqTitle").textContent=t.title;$("eqNote").textContent=t.note;}
-if(document.readyState==="complete")boot();
-else addEventListener("load",boot);         // after KaTeX (defer) has executed
+if(document.readyState==="complete")boot();else addEventListener("load",boot);
 })();
 </script>
 

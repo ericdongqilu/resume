@@ -55,7 +55,9 @@ main{margin-left:64px;position:relative}
 .mode-btn:hover,.lang-btn:hover{border-color:var(--shu)}
 .lang-btn.on{border-color:var(--shu);color:var(--shu)}
 .mode-btn:focus-visible,.lang-btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--shu);outline-offset:3px}
-header.hero{position:relative;min-height:96vh;display:flex;align-items:center;overflow:hidden}
+header.hero{position:relative;height:96svh;min-height:560px;display:flex;align-items:center;overflow:hidden}
+@media(max-width:600px){.hero-inner{padding:70px 7vw 80px !important}}
+section{scroll-margin-top:24px}
 #inkgl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .mountains{position:absolute;inset:0;pointer-events:none;z-index:1}
 .mountains svg{position:absolute;bottom:-2px;left:0;width:100%}
